@@ -27,6 +27,7 @@
     2019-06-10  : Add playvideostreaming exception handling
     2019-06-25 : Add web drive quit code befort starting current task
     2019-07-02 : check test order. (checkTestOrder)
+    2019-07-23 : start SESC Localization 
 --***********************************************************************************************************/
 
 using System;
