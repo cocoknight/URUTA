@@ -6,6 +6,8 @@
 
   2019-06-30 : Add new YouTube Automation Manager class
   2019-06-30 : Background Worker를 사용시 다음과 같이 역할 분담을 한다.
+  2019-07-24 : Test Regison설정.
+
   dowork : working thread. 필요한 작업 수행
   worker_ProgressChanged : UI작업 수행. UI Task에 작업 요청 가능
   worker_RunWorkerCompleted : UI작업 수행. UI Task에 작업 요청 가능
@@ -82,11 +84,16 @@ namespace PerformanceUsability
         public string _playURL;
         public int _finishTime ;
 
+        //TOAN : 07/24/2019. Test Region설정
+        public string _testRegion; 
+
         public CYoutubeManager()
         {
             //System.Diagnostics.Debug.WriteLine("key:{0}, value:{1}",currObj.Key,currObj.Value);
             System.Diagnostics.Debug.WriteLine("Default Constructor for CMediaPlay");
             System.Diagnostics.Debug.WriteLine("Player Default Mode:{0}", this.playerMode);
+
+            _testRegion = "ALL";
             // this.initSelenium();
         }
 
@@ -100,6 +107,7 @@ namespace PerformanceUsability
             _isFinishTimerElapsed = false;
             _isSkipAdvertisement = false;
             //this.initSelenium(type);
+            _testRegion = "ALL";
 
             _keyList = KeyList.Instance;
             _myUtility = CUtility.Instance;
@@ -156,6 +164,12 @@ namespace PerformanceUsability
             _finishTime = time * 60;
         }
 
+        public void setRegion(string region)
+        {
+            _testRegion = region;
+
+        }
+
         void worker_DoWork(object sender, DoWorkEventArgs e)
         {
            string argument = e.Argument as string;
@@ -171,10 +185,21 @@ namespace PerformanceUsability
                             this.setTimeWait(5);
                             this.TaskUpdateData(TaskStatus.TASK_RUNNING);
                             this.TaskRunningRecord(TaskRunningList.TASK_YOUTUBE);
-                            worker.ReportProgress(1); //View Update
+                            worker.ReportProgress(1); //View Update(This is very nice code)
 
                             this.playVideoStreaming(_playURL);
-                            this.controlVideoStreaming(ControlType.FULLSCREEN);
+
+                            //TOAN : 07/24/2019.
+                            //_uiManager
+                            string currRegion = _uiManager.getCurrentRegion();
+
+                            if (!currRegion.Equals("CN"))
+                            {
+                                this.controlVideoStreaming(ControlType.FULLSCREEN);
+                            }
+                            //this.controlVideoStreaming(ControlType.FULLSCREEN);
+
+
                             Thread.Sleep(5000);
                             //Thread.Sleep(2000);
                             //this.setSystemTimer(1);
@@ -194,15 +219,25 @@ namespace PerformanceUsability
                                     //step1 : check advertisement
                                     //youtube영상은 광고 있는게 있고, 없는것도 있다.(다시보기 했을때)
                                     //이경우 advertistmemt check를 하지 않으면, 원치않게 광고가 끝났을 때, 광고를 test contents로 알고 종료함
-                                    if (_isSkipAdvertisement == false)
+                                    //TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
+                                    //Dependency가 있는 코드는 사용하지 않는다.
+                                    if (!currRegion.Equals("CN"))
                                     {
-                                        this.checkAdvertise();
+                                        if (_isSkipAdvertisement == false)
+                                        {
+                                            this.checkAdvertise();
 
+                                        }
                                     }
 
                                     //step2 : check video end
                                     //TOAN : 07/02/2019. 별도의 timer없이 loop에서 체크.
-                                    this.checkvideoEnd();
+                                    //TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
+                                    //Dependency가 있는 코드는 사용하지 않는다.
+                                    if (!currRegion.Equals("CN"))
+                                    {
+                                        this.checkvideoEnd();
+                                    }
                                     
                                 } while (this._exit_flag == false);
                             }

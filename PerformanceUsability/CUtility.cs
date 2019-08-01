@@ -6,7 +6,7 @@
 
     2019-01-10   : Make a SingleTone Class
     2019-04-03 : add new verion of getBatteryLife with interger return type
-
+    2019-08-01 : change battery variable int -> double
 --***********************************************************************************************************/
 
 using System;
@@ -31,8 +31,8 @@ namespace PerformanceUsability
 
         //protected string _batteryLife;
         protected string _currentTime;
-        protected int _batterySize;
-
+        //protected int _batterySize;
+        protected double _batterySize;
         private CUtility()
         {
 
@@ -89,12 +89,14 @@ namespace PerformanceUsability
             return _currentTime;
         }
 
-        public void setBatteryWH(int batterySize)
+        //public void setBatteryWH(int batterySize)
+        public void setBatteryWH(double batterySize)
         {
             _batterySize = batterySize;
         }
 
-        public int getBatteryWH()
+        //public int getBatteryWH()
+        public double getBatteryWH()
         {
             return _batterySize;
         }

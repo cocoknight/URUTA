@@ -46,6 +46,7 @@
             this.lblCase1 = new System.Windows.Forms.Label();
             this.chkMovieRank = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnDecison = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btncompareModel = new System.Windows.Forms.Button();
@@ -266,6 +267,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.btnDecison);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.grpTestInfo);
@@ -280,6 +282,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = " ";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(1229, 446);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(92, 30);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Get Region";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // btnDecison
             // 
@@ -312,7 +324,7 @@
             // 
             // btncompareModel
             // 
-            this.btncompareModel.Location = new System.Drawing.Point(456, 60);
+            this.btncompareModel.Location = new System.Drawing.Point(522, 60);
             this.btncompareModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btncompareModel.Name = "btncompareModel";
             this.btncompareModel.Size = new System.Drawing.Size(86, 31);
@@ -323,7 +335,7 @@
             // 
             // btnTestModel
             // 
-            this.btnTestModel.Location = new System.Drawing.Point(456, 24);
+            this.btnTestModel.Location = new System.Drawing.Point(522, 20);
             this.btnTestModel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnTestModel.Name = "btnTestModel";
             this.btnTestModel.Size = new System.Drawing.Size(86, 31);
@@ -334,7 +346,7 @@
             // 
             // txtCompareModelResult
             // 
-            this.txtCompareModelResult.Location = new System.Drawing.Point(98, 61);
+            this.txtCompareModelResult.Location = new System.Drawing.Point(154, 63);
             this.txtCompareModelResult.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtCompareModelResult.Name = "txtCompareModelResult";
             this.txtCompareModelResult.Size = new System.Drawing.Size(350, 25);
@@ -342,7 +354,7 @@
             // 
             // txtTestModelResult
             // 
-            this.txtTestModelResult.Location = new System.Drawing.Point(98, 24);
+            this.txtTestModelResult.Location = new System.Drawing.Point(154, 26);
             this.txtTestModelResult.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtTestModelResult.Name = "txtTestModelResult";
             this.txtTestModelResult.Size = new System.Drawing.Size(350, 25);
@@ -394,7 +406,7 @@
             // 
             // cmdLowBattery
             // 
-            this.cmdLowBattery.Location = new System.Drawing.Point(911, 89);
+            this.cmdLowBattery.Location = new System.Drawing.Point(905, 93);
             this.cmdLowBattery.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cmdLowBattery.Name = "cmdLowBattery";
             this.cmdLowBattery.Size = new System.Drawing.Size(85, 24);
@@ -561,7 +573,7 @@
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.1.2";
+            this.Text = "체감 실사용시간 측정 2.1.1.4";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();
@@ -621,6 +633,7 @@
         private System.Windows.Forms.TextBox txtTestModelResult;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button1;
     }
 }
 

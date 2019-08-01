@@ -19,6 +19,9 @@
     2019-04-03 : Fix Math.Round calulation for running time
     2019-04-04 : After Task Finish, Update Running Time
     2019-06-06 : Add Exceptoin Handling for initSelenium with Retry-Handler.
+    2019-08-01 : change battery variable int to double for Odiz and Zeus Model
+                 It is difficult to change size to double. 
+                 Because except these model. All model have just integer battery size capacity.
 
     //Selenium and Chrome Driver Exception Handling.
     https://github.com/SeleniumHQ/selenium/issues/6317
@@ -75,6 +78,7 @@ namespace PerformanceUsability
         //double _remaining_battery;
         //double _discharge;
         protected int _startBattery;
+        
         int _remaining_battery;
         int _discharge;
 
@@ -306,6 +310,7 @@ namespace PerformanceUsability
                         _taskStartTime = System.DateTime.Now;
                         //TOAN : 04/03/2019. Double->Integer값으로 진행(double값 계산시 0.999999999와 같은 상황 발생)
                         //_startBattery = _myUtility.getBatteryLife();
+                        //TOAN : 08/01/2019. System Battery값을 읽어온다. 이것은 정수 형태이다.
                         _startBattery = _myUtility.getBatteryLifeV1();
 
                         //시작 전 상태를 string변수에 기록한다.

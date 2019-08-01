@@ -27,7 +27,10 @@
     2019-06-10  : Add playvideostreaming exception handling
     2019-06-25 : Add web drive quit code befort starting current task
     2019-07-02 : check test order. (checkTestOrder)
-    2019-07-23 : start SESC Localization 
+    2019-07-23 : start SESC Localization
+                 User can't plya youtube in China. 
+                 So that I have to ignore youtube dependency code, in case of China Region   
+    2019-08-01 : change Battery size variable int -> double 
 --***********************************************************************************************************/
 
 using System;
@@ -62,8 +65,7 @@ using System.Net.NetworkInformation;
 
 //TOAN : 04/08/2019. 글자만 추출하기 위함.
 using System.Text.RegularExpressions;
-
-
+using System.Globalization;
 
 namespace PerformanceUsability
 {
@@ -147,14 +149,30 @@ namespace PerformanceUsability
         public Form1()
         {
 
+            
+
             //TOAN : 12/24/2018 . Avoid System.InvalidOperationException: '크로스 스레드 작업이 잘못되었습니다. 
             //위 Exception을 해결하는 가장 Simple한 방법
             //아니면 Thread Racing에 맞게 코드 변경해야 한다.
             CheckForIllegalCrossThreadCalls = false;
 
             InitializeComponent();
+
+            //TOAN : 07/24/2019. Checl China Localization
+            //접속 지역이 중국인 경우.
+            string currRegion = this.getCurrentRegion();
+            if (currRegion.Equals("CN"))
+            {
+                this.Text = "User Feeling Real Use Time Automation 2.1.1.3";
+                lblCase1.Text = "Search Naver Movie Ranking";
+                lblCase2.Text = "Play QQ Video Streaming";
+                label1.Text = "Test Model:";
+                label2.Text = "Compare Model:";
+            }
+
+
             //TOAN : 12/24/2018. Display Thread Number
-            
+
             //initialize ListView Data Structure
             _columnInfoDic = new Dictionary<string, string>();
             _iteminfoList = new List<Dictionary<string, string>>();
@@ -303,6 +321,8 @@ namespace PerformanceUsability
             //int batterySize = Int32.Parse(currBattery);
             //_myUtility.setBatteryWH(batterySize);
 
+
+            
         }
 
         //TOAN : 03/20/2019. checking for network available
@@ -779,9 +799,14 @@ namespace PerformanceUsability
                         //실제 Youtube컨텐츠의 종료를 체크할수도 있지만,이경우는 streaming상황에 따라 수행시간이 틀려질수 있다.
                         //따라서 Youtube의 경우 contents상관없이 30분 task-timer로 종료시킨다.
                         //대도서관의 경우도, 31분쯤에 contents종료가 되겠지만, task finish timer가 먼저 수행될 것이다.
-                        int testtime = 30; 
+                        int testtime = 30;
+
+                        //TOAN : 07/24/2019. Add Region Check
+                        string currRegion = this.getCurrentRegion();
                         _youtubeManager.setURL(playURL);
                         _youtubeManager.setTestTime(testtime);
+                        _youtubeManager.setRegion(currRegion);
+
                         _youtubeManager.worker.RunWorkerAsync(requestMode);
 
                         break;
@@ -868,7 +893,9 @@ namespace PerformanceUsability
 
 
                 //Test Model배터리 용량지정. 사용자가 set버튼을 안누르고 테스트시작 가능
-                int batterySize = Int32.Parse(txtBattery.Text);
+                //TOAN : 08/01/2019. int to double
+                //int batterySize = Int32.Parse(txtBattery.Text);
+                double batterySize = Double.Parse(txtBattery.Text);
                 _myUtility.setBatteryWH(batterySize);
 
                 //Low Battery용량 지정. 사용자가 set버튼을 안누르고 테스트 시작 가능
@@ -1269,11 +1296,21 @@ namespace PerformanceUsability
 
         private void btnBattery_Click(object sender, EventArgs e)
         {
-            int batterySize = Int32.Parse(txtBattery.Text);
+            //TOAN : 08/01/2019. change variable int -> double
+            //Odiz Zeus change battery size to double
+
+            //int batterySize = Int32.Parse(txtBattery.Text);
+            double batterySize = Double.Parse(txtBattery.Text);
             _myUtility.setBatteryWH(batterySize);
 
             double remaining_battery = _myUtility.getBatteryWH();
             System.Diagnostics.Debug.WriteLine("Battery Exist:{0}", remaining_battery);
+
+            //TOAN : 07/24/2019. confirm battery capacity
+            MessageBox.Show("Battery Capacity has been suceesfully stored.",
+                                   "Message",
+                                   MessageBoxButtons.OK,
+                                   MessageBoxIcon.Information);
         }
 
         private void grpTestInfo_Enter(object sender, EventArgs e)
@@ -1537,6 +1574,12 @@ namespace PerformanceUsability
         {
             //int batterySize = Int32.Parse(txtBattery.Text);
             _lowBattery = Int32.Parse(txtLowBattery.Text);
+
+            //TOAN : 07/24/2019. confirm battery capacity
+            MessageBox.Show("Low Battery Level has been suceesfully stored.",
+                                   "Message",
+                                   MessageBoxButtons.OK,
+                                   MessageBoxIcon.Information);
         }
 
 
@@ -1728,6 +1771,36 @@ namespace PerformanceUsability
         {
 
         }
+
+        public string getCurrentRegion()
+        {
+            string retValue = "";
+
+            var regionInfo = RegionInfo.CurrentRegion;
+            var name = regionInfo.Name;
+            var englishName = regionInfo.EnglishName;
+            var displayName = regionInfo.DisplayName;
+            retValue = name;
+            return retValue;
+        }
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            //Get Country Information
+            //var cultureInfoName = new RegionInfo(cultureInfo.Name);
+            //string countryName = cultureInfoName.DisplayName;
+            //System.Diagnostics.Debug.WriteLine(string.Format("node value:{0}", countryName));
+
+            var regionInfo = RegionInfo.CurrentRegion;
+            var name = regionInfo.Name;
+            var englishName = regionInfo.EnglishName;
+            var displayName = regionInfo.DisplayName;
+
+            System.Diagnostics.Debug.WriteLine(string.Format("Name value:{0}", name));
+            System.Diagnostics.Debug.WriteLine(string.Format("EnglishName value:{0}", englishName));
+            System.Diagnostics.Debug.WriteLine(string.Format("DisplayName value:{0}", displayName));
+         
+        }
+
     }  //End of Form Class 
 
    
