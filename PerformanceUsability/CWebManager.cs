@@ -5,7 +5,8 @@
     http://creativecommons.org/licenses/by/2.5/ 
 
   2019-06-30 : Add new Web automation Manager class
-  2019-06-30 : 
+  2019-08-22 : Exception발생 후, 기존 URL Retry시 driver호출코드가 빠져 있었음. 
+               이경우 계속해서 인터넷창이 남아있고, 에러 난것으로 보고 됨. 즉 exception발생이후 retry를 하지 않음.
 
   key word : how to cancel background worker after specified time in c#
   URL : https://stackoverflow.com/questions/1341488/how-to-cancel-background-worker-after-specified-time-in-c-sharp
@@ -303,6 +304,9 @@ namespace PerformanceUsability
             string xpath_p3 = "]";
 
             _saveURL = _driver.Url;
+
+            //TOAN : 08/22/2019 Code Change. Exception처리 후, 아래코드가 있어야지 Browser가 재동작함.
+            _driver.Url = _saveURL;
 
             for (int i = 1; i <= 8; i++)
             {

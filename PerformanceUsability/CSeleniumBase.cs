@@ -157,13 +157,15 @@ namespace PerformanceUsability
                 //case2
                 //string cPath = System.Reflection.Assembly.GetExecutingAssembly().Location; //executable path
                 //string appPath = Path.GetDirectoryName(Application.ExecutablePath); //executable directory path
-                                                                                    //System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
+                //System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
 
                 //_driver = new OpenQA.Selenium.Chrome.ChromeDriver();
 
 
                 //case3
-                string appPath =System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                //TOAN : 08/20/2019. chrome driver를 사용자가 선택해서 진행하도록 수정.
+                //string appPath =System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string appPath = _uiManager.getDriverPaht();
                 System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
 
                 //TOAN :06/25/2019. add option

@@ -31,6 +31,9 @@
                  User can't plya youtube in China. 
                  So that I have to ignore youtube dependency code, in case of China Region   
     2019-08-01 : change Battery size variable int -> double 
+    2019-08-20 : Tester can set chrome driver path for new chrome driver version.(2.1.1.5)
+    2019-08-22 : Add cmdRun button enable/disable control
+
 --***********************************************************************************************************/
 
 using System;
@@ -66,6 +69,9 @@ using System.Net.NetworkInformation;
 //TOAN : 04/08/2019. 글자만 추출하기 위함.
 using System.Text.RegularExpressions;
 using System.Globalization;
+
+//TOAN : 08/20/2019. chrome driver폴더 선택을 위해 사용
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace PerformanceUsability
 {
@@ -146,6 +152,10 @@ namespace PerformanceUsability
         //TaskRunningList
         LinkedList<TaskRunningList> _tasklist;
         List<TaskRunningList> _taskOrder;
+
+        //TOAN : 08/20/2019. Tester can set chrome driver for new version
+        public string _driverPath;
+
         public Form1()
         {
 
@@ -158,12 +168,17 @@ namespace PerformanceUsability
 
             InitializeComponent();
 
+            //TOAN : 08/20/2019. Set Default driver path(Below is default path)
+            _driverPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", _driverPath));
+
+
             //TOAN : 07/24/2019. Checl China Localization
             //접속 지역이 중국인 경우.
             string currRegion = this.getCurrentRegion();
             if (currRegion.Equals("CN"))
             {
-                this.Text = "User Feeling Real Use Time Automation 2.1.1.3";
+                this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 lblCase1.Text = "Search Naver Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
                 label1.Text = "Test Model:";
@@ -884,6 +899,9 @@ namespace PerformanceUsability
             }
             else
             {
+                //TOAN : 08/22/2019. 수행중에 RUN버튼을 두번눌러지지 않게 변경.
+                cmdRun.Enabled = false;
+
                 txtStart.Text = this.getCurrentTime();
                 txtCurrentBattery.Text = getBatteryLevel();
 
@@ -1496,6 +1514,10 @@ namespace PerformanceUsability
                 //save to report
                 //txtEnd.Text = this.getCurrentTime();
                 //this.saveTestResult();
+
+                //TOAN : 08/22/2019. enable "TEST" button
+                cmdRun.Enabled = true;
+
             }
         }
 
@@ -1801,6 +1823,31 @@ namespace PerformanceUsability
          
         }
 
+        private void BtnDriver_Click(object sender, EventArgs e)
+        {
+            //CommonOpenFileDialog dialog = new CommonOpenFileDialog(); 
+            //// 처음 보여줄 폴더 설정(안해도 됨) 
+            ////dialog.InitialDirectory = ""; 
+            //dialog.IsFolderPicker = true;
+            //if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            //{
+            //    //label.Text = dialog.FileName; // 테스트용, 폴더 선택이 완료되면 선택된 폴더를 label에 출력 
+            //    _driverPath = dialog.FileName;
+            //    System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", _driverPath));
+            //}
+
+
+            //기본 Folder Browser Dialog사용.
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.ShowDialog();
+            _driverPath = dialog.SelectedPath;    //선택한 다이얼로그 경로 저장
+
+        }
+
+        public string getDriverPaht()
+        {
+            return _driverPath;
+        }
     }  //End of Form Class 
 
    

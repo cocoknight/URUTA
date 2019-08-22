@@ -46,7 +46,7 @@
             this.lblCase1 = new System.Windows.Forms.Label();
             this.chkMovieRank = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnDriver = new System.Windows.Forms.Button();
             this.btnDecison = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btncompareModel = new System.Windows.Forms.Button();
@@ -169,9 +169,9 @@
             this.lblCase7.AutoSize = true;
             this.lblCase7.Location = new System.Drawing.Point(56, 134);
             this.lblCase7.Name = "lblCase7";
-            this.lblCase7.Size = new System.Drawing.Size(237, 15);
+            this.lblCase7.Size = new System.Drawing.Size(184, 15);
             this.lblCase7.TabIndex = 19;
-            this.lblCase7.Text = "Web File Download(10MB) Number";
+            this.lblCase7.Text = "Web File Download(10MB)";
             this.lblCase7.Click += new System.EventHandler(this.lblCase7_Click);
             // 
             // chkWebDownload
@@ -267,7 +267,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.btnDriver);
             this.groupBox1.Controls.Add(this.btnDecison);
             this.groupBox1.Controls.Add(this.groupBox2);
             this.groupBox1.Controls.Add(this.grpTestInfo);
@@ -283,15 +283,16 @@
             this.groupBox1.Text = " ";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
-            // button1
+            // btnDriver
             // 
-            this.button1.Location = new System.Drawing.Point(1229, 446);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 30);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Get Region";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.btnDriver.Location = new System.Drawing.Point(1229, 340);
+            this.btnDriver.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnDriver.Name = "btnDriver";
+            this.btnDriver.Size = new System.Drawing.Size(91, 29);
+            this.btnDriver.TabIndex = 8;
+            this.btnDriver.Text = "Driver Load";
+            this.btnDriver.UseVisualStyleBackColor = true;
+            this.btnDriver.Click += new System.EventHandler(this.BtnDriver_Click);
             // 
             // btnDecison
             // 
@@ -421,7 +422,7 @@
             this.txtLowBattery.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtLowBattery.Name = "txtLowBattery";
             this.txtLowBattery.Size = new System.Drawing.Size(223, 25);
-            this.txtLowBattery.TabIndex = 14;
+            this.txtLowBattery.TabIndex = 11;
             // 
             // labelLowBattery
             // 
@@ -573,7 +574,7 @@
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.1.4";
+            this.Text = "체감 실사용시간 측정 2.1.1.5";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();
@@ -633,7 +634,7 @@
         private System.Windows.Forms.TextBox txtTestModelResult;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnDriver;
     }
 }
 
