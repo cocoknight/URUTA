@@ -278,7 +278,6 @@ namespace PerformanceUsability
                             System.Diagnostics.Debug.WriteLine("Find Result:{0}", searchResult);
                             //this.composeTaskList(currentTestCase, _tcListCompare);
                             this.composeTaskList(_ws_dest, _currentTestcase, _tcListCompare);
-
                         }
                         catch (Exception ex)
                         {
@@ -301,8 +300,9 @@ namespace PerformanceUsability
             Worksheet sWs = ws as Worksheet;
             Range startRange = keyRecord as Range;
             Range endRange = startRange.End[XlDirection.xlToRight];
-            var selectArea = sWs.Range[startRange, endRange].Select();
-
+            //Range selectArea = sWs.Range[startRange, endRange].Select();
+            
+        
             foreach (Range ran in sWs.Range[startRange, endRange])
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("Range Value:{0}", ran.Value as string));
