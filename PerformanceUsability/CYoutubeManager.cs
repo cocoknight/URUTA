@@ -238,7 +238,9 @@ namespace PerformanceUsability
                                     {
                                         this.checkvideoEnd();
                                     }
-                                    
+
+                                    //TOAN : 06/15/2020.
+                                    Thread.Sleep(1000);
                                 } while (this._exit_flag == false);
                             }
                             catch (OpenQA.Selenium.UnhandledAlertException ex)

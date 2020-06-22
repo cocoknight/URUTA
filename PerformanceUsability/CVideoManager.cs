@@ -114,6 +114,10 @@ namespace PerformanceUsability
                                 {
                                     return;
                                 }
+
+                                //TOAN : 06/15/2020.
+                                //제어권을 반환해야지 파워소모를 줄일 수가 있다.
+                                Thread.Sleep(1000);
                             } while (this._exit_flag == false);
 
                         }catch (Exception ex)

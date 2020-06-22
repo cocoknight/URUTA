@@ -123,9 +123,11 @@ namespace PerformanceUsability
             _tcListCompare = new List<Dictionary<string, string>>();
 
             //TOAN : 04/07/2019. Low Battery 수식 테스트 용도
+            //TOAN : 06/15/2020. 현재 자동화설정에서 3%가 최소 설정으로 되어 있다.
             //hard-coding이 아닌 Excel File에서 가지고 올수 있도록 변경하자.
-            low_battery = 78/*83*/; 
-    }
+            //low_battery = 78/*83*/; 
+            low_battery = 3;
+        }
 
         public void connectUI(Form1 conn)
         {
@@ -630,22 +632,52 @@ namespace PerformanceUsability
             int listCountA = _tcListSrc.Count;
             int listCountB = _tcListCompare.Count;
 
-            if(listCountA>listCountB)
+            //TOAN : 06/15/2020. code change
+            //previous 2.1.1.5
+            //if(listCountA>listCountB)
+            //{
+            //    //검증모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
+            //    int compareNumber = this.get_compareCount(_tcListCompare);
+            //    System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
+            //    numofTC = compareNumber - 1;
+            //}
+            //else
+            //{
+            //    //비교모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
+            //    //이경우 src모델의 testcase을 기준으로 low-battery이전까지 수행항목 갯수를 체크 한다.
+
+            //    int compareNumber = this.get_compareCount(_tcListSrc);
+            //    System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}",compareNumber));
+            //    numofTC = compareNumber - 1;
+            //}
+
+            if (listCountA > listCountB)
             {
                 //검증모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
                 int compareNumber = this.get_compareCount(_tcListCompare);
                 System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
                 numofTC = compareNumber - 1;
             }
-            else
+            else if (listCountB > listCountA)
             {
                 //비교모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
                 //이경우 src모델의 testcase을 기준으로 low-battery이전까지 수행항목 갯수를 체크 한다.
 
                 int compareNumber = this.get_compareCount(_tcListSrc);
-                System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}",compareNumber));
+                System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
                 numofTC = compareNumber - 1;
             }
+            
+            else
+            {
+                //src와 dest의 수행갯수가 동일할 때.
+                numofTC = this.get_compareCount(_tcListSrc);
+                System.Diagnostics.Debug.WriteLine(String.Format("The number of case is same"));
+            }
+
+
+
+
 
             System.Diagnostics.Debug.WriteLine(String.Format("List Size TestMode:{0},CompareMode:{1}", listCountA,listCountB));
 
@@ -1025,7 +1057,9 @@ namespace PerformanceUsability
                             {
                                 string strTmp = Regex.Replace(strTarget, @"\D", "");
                                 double nTmp = double.Parse(strTmp);
-                                usagedPower = usagedPower + nTmp;
+                                //TOAN : 06/15/2020. 시간 수식 오류 수정
+                                //usagedPower = usagedPower + nTmp;
+                                usagedTime = usagedTime + nTmp;
                                 System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
                             }
                               

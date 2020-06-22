@@ -161,6 +161,10 @@ namespace PerformanceUsability
 
                                     this.iterateRanking(e);
 
+                                    //TOAN : 06/15/2020. Power-control
+                                    Thread.Sleep(1000);
+
+
                                 }
                                 catch (OpenQA.Selenium.UnhandledAlertException ex)
                                 {
