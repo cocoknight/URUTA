@@ -169,6 +169,7 @@ namespace PerformanceUsability
                 System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
 
                 //TOAN :06/25/2019. add option
+                //options.add_argument("--disable-extensions")
                 var options = new ChromeOptions();
                 options.AddAdditionalCapability("useAutomationExtension", false);
                 options.AddArguments("--ignore-certificate-errors");

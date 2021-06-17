@@ -178,7 +178,8 @@ namespace PerformanceUsability
             string currRegion = this.getCurrentRegion();
             if (currRegion.Equals("CN"))
             {
-                this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
+                //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
+                this.Text = "User Feeling Real Use Time Automation 2.1.1.7";
                 lblCase1.Text = "Search Naver Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
                 label1.Text = "Test Model:";

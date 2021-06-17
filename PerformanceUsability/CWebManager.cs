@@ -7,6 +7,7 @@
   2019-06-30 : Add new Web automation Manager class
   2019-08-22 : Exception발생 후, 기존 URL Retry시 driver호출코드가 빠져 있었음. 
                이경우 계속해서 인터넷창이 남아있고, 에러 난것으로 보고 됨. 즉 exception발생이후 retry를 하지 않음.
+  2020-09-04 : Naver "최신 인기 영화" DOM변경에 따른 소스 변경
 
   key word : how to cancel background worker after specified time in c#
   URL : https://stackoverflow.com/questions/1341488/how-to-cancel-background-worker-after-specified-time-in-c-sharp
@@ -299,9 +300,15 @@ namespace PerformanceUsability
             string currentXPath_part3 = "";
             string composeXPath = "";
 
-            currentXPath_part1 = "//*[@class='movie_audience_ranking _main_panel v2']//div[1]//ul[1]//";
+            //TOAN : 09/04/2020. Naver Page소스 변경에 따른 URL변경(2.1.1.7에 포함). 그리고 인기영화순위 10개로 변경.
+            //currentXPath_part1 = "//*[@class='movie_audience_ranking _main_panel v2']//div[1]//ul[1]//";
+            //currentXPath_part2 = "li[1]";
+            //currentXPath_part3 = "//div[1]//a[1]";
+
+
+            currentXPath_part1 = "//*[@class='list_image_info type_pure_top']//div//ul[1]//";
             currentXPath_part2 = "li[1]";
-            currentXPath_part3 = "//div[1]//a[1]";
+            currentXPath_part3 = "//a";
 
             string xpath_p1 = "li[";
             string xpath_variable;
@@ -309,10 +316,12 @@ namespace PerformanceUsability
 
             _saveURL = _driver.Url;
 
+
             //TOAN : 08/22/2019 Code Change. Exception처리 후, 아래코드가 있어야지 Browser가 재동작함.
             _driver.Url = _saveURL;
 
-            for (int i = 1; i <= 8; i++)
+            //TOAN : 09/04/2020. 인기영화순위 8->10개로 변경
+            for (int i = 1; i <= /*8*/10; i++)
             {
 
                 //TOAN : 06/30/2019. Background Worker Cancel확인
@@ -325,6 +334,7 @@ namespace PerformanceUsability
                 currentXPath_part2 = xpath_p1 + xpath_variable + xpath_p3;
                 composeXPath = currentXPath_part1 + currentXPath_part2 + currentXPath_part3;
 
+                System.Diagnostics.Debug.WriteLine(string.Format("compose xpath : {0}",composeXPath));
                 System.Diagnostics.Debug.WriteLine("[Web Actor]send find element ");
                 Thread.Sleep(5000);
                 _driver.FindElement(By.XPath(composeXPath)).Click();
