@@ -172,7 +172,6 @@ namespace PerformanceUsability
             _driverPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", _driverPath));
 
-
             //TOAN : 07/24/2019. Checl China Localization
             //접속 지역이 중국인 경우.
             string currRegion = this.getCurrentRegion();
@@ -188,7 +187,6 @@ namespace PerformanceUsability
 
 
             //TOAN : 12/24/2018. Display Thread Number
-
             //initialize ListView Data Structure
             _columnInfoDic = new Dictionary<string, string>();
             _iteminfoList = new List<Dictionary<string, string>>();
@@ -564,11 +562,14 @@ namespace PerformanceUsability
             if(string.IsNullOrEmpty(txtTime3.Text))
             {
                 //txtTime3.Text = "C:\\movie\\Street-19627.avi";
+                //TOAN : 06/17/2021. for shorting test time
                 txtTime3.Text = "C:\\autotest\\split.avi";
+                //txtTime3.Text = "C:\\autotest\\sea.avi";
             }
 
             if (string.IsNullOrEmpty(txtTime2.Text))
             {
+                //TOAN : 06/17/2021. 시간 saving테스트
                 //txtTime2.Text = "https://www.youtube.com/watch?v=eKNLp1xjdzI";
                 txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc"; //대도서관 30분짜리 컨텐츠(실제 검증용). release용
                 //txtTime2.Text = "https://www.youtube.com/watch?v=MBNQgq56egk";   //test용
