@@ -241,6 +241,9 @@ namespace PerformanceUsability
                         try
                         {
                             //TOAN : 06/11/2019. Read-Only popup을 보여주지 않기 위함.
+                            //TOAN : 07/13/2021. Dest의 경우에도 key정보는 src와 동일하기 때문에
+                            //       별도의 composeKeyXXX와 같은 함수는 호출하지 않는다.
+                            //       src
                             _app.DisplayAlerts = false;
 
                             _wb_dest = _app.Workbooks.Open(name);
@@ -654,18 +657,26 @@ namespace PerformanceUsability
             if (listCountA > listCountB)
             {
                 //검증모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
-                int compareNumber = this.get_compareCount(_tcListCompare);
+                //따라서 두 모델의 기준을 맞추기 위해 비교 모델의 LowBattery전까지의 테스트 수행 갯수를 가지고 온다.
+                //TOAN : 07/13/2021. Logic-Change
+                //int compareNumber = this.get_compareCount(_tcListCompare);
+                int compareNumber = listCountB;
                 System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
-                numofTC = compareNumber - 1;
+                //TOAN : 07/13/2021. code logic수정.
+                //numofTC = compareNumber - 1;
+                numofTC = compareNumber;
             }
             else if (listCountB > listCountA)
             {
                 //비교모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
                 //이경우 src모델의 testcase을 기준으로 low-battery이전까지 수행항목 갯수를 체크 한다.
-
-                int compareNumber = this.get_compareCount(_tcListSrc);
+                //TOAN : 07/13/2021
+                //int compareNumber = this.get_compareCount(_tcListSrc);
+                int compareNumber = listCountA;
                 System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
-                numofTC = compareNumber - 1;
+                //TOAN : 07/13/2021. code logic수정
+                //numofTC = compareNumber - 1;
+                numofTC = compareNumber;
             }
             
             else
@@ -676,11 +687,7 @@ namespace PerformanceUsability
             }
 
 
-
-
-
             System.Diagnostics.Debug.WriteLine(String.Format("List Size TestMode:{0},CompareMode:{1}", listCountA,listCountB));
-
             _averagePower = this.getAveragePower(_tcListSrc, numofTC);
             _com_averagePower = this.getAveragePower(_tcListCompare, numofTC);
 
@@ -943,6 +950,7 @@ namespace PerformanceUsability
             bool retValue = false;
             double calValue = 0.0;
             //세번째 인자가 없으면 0.5에서 반올림이 되지 않는다.
+            //비교모델대비 110%이내에 들어오면 true이다.
             calValue = Math.Round(compareAveragePower * 1.1, 1, MidpointRounding.AwayFromZero);
             if(srcAveragePower>calValue)
             {
@@ -960,7 +968,12 @@ namespace PerformanceUsability
             int testCount = 0;
             bool loop_exit = false;
 
-            foreach (var currTc in _tcListSrc)
+            //TOAN : 07/13/2021. Bug-fix. 로직의 bug가 있었따.
+            //bug1 : currList를 사용하지 않고, _tcListSrc로 hard-coding
+            //bug2 : "Remain Battery"체크를 5%와 equal로 비교한것. 배터리 레벨은 갑자기 5를 거지치 않고 4로 떨어질 수도 있다.
+            //foreach (var currTc in _tcListSrc)
+            //TOAN : 07/13/2021. bug1 fix
+            foreach (var currTc in currList)
             {
 
                 //testCount += 1;
@@ -977,7 +990,11 @@ namespace PerformanceUsability
                             //int remaingBattery= currObj.Value
                             double remaingBattery = double.Parse(currObj.Value)*100;
 
-                            if (remaingBattery==low_battery)
+                            //TOAN : 07/13/2021. 이것이 잘못된 로직이다.
+                            //2초 간격으로 Battery를 체크하지만 테스트 종료시 5%가 아니라, 5%언더에서 실행이 종료될 수 도 있다.
+                            //6%에서 4%로 Battery Level이 다운될수도 있기 때문이다.
+                            //TOAN : 07/13/2021. 아래 비교가 의미 없을 수 있따.
+                            //if (remaingBattery==low_battery)
                             {
                                 loop_exit = true;
                                 break;
@@ -1076,8 +1093,7 @@ namespace PerformanceUsability
 
             System.Diagnostics.Debug.WriteLine(string.Format("Usaged Power:{0}", usagedPower));
             System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
-
-            //STEP2 : 
+//STEP2 : 
             calAverage = Math.Round(usagedPower/ usagedTime, 1, MidpointRounding.AwayFromZero);
             return calAverage;
         }
