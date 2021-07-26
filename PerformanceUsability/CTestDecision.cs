@@ -682,7 +682,10 @@ namespace PerformanceUsability
             else
             {
                 //src와 dest의 수행갯수가 동일할 때.
-                numofTC = this.get_compareCount(_tcListSrc);
+                //TOAN : 07/26/2021. 앞의 경우와 마찬가지로 같을 때도 get_compareCount를 수행할 필요가 없다.
+                //get_compaeCount로직은 더이상 사용하지 않는다.
+                //numofTC = this.get_compareCount(_tcListSrc);
+                numofTC = listCountA; //listCountB도 상관은 없다
                 System.Diagnostics.Debug.WriteLine(String.Format("The number of case is same"));
             }
 
@@ -1097,6 +1100,7 @@ namespace PerformanceUsability
             calAverage = Math.Round(usagedPower/ usagedTime, 1, MidpointRounding.AwayFromZero);
             return calAverage;
         }
+
 
         void getAveragePower(List<Dictionary<string, string>> currList, 
                                int testStep,

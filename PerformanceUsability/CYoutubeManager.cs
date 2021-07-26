@@ -181,30 +181,46 @@ namespace PerformanceUsability
                 {
                     case "ACTION_START":
                         {
-                            this.initSelenium(0);
-                            this.setTimeWait(5);
-                            this.TaskUpdateData(TaskStatus.TASK_RUNNING);
-                            this.TaskRunningRecord(TaskRunningList.TASK_YOUTUBE);
+                            //TOAN : 07/15/2021. code-change
+                            //this.initSelenium(0);
+                            this.initSelenium(_webType);
+
+                            //TOAN : 07/16/2021. Exception Handling. Exception이 생기더라도 Timer에 의해 종료되도록 지원
+                            this.setTaskFinishTimer(_finishTime);
+                            try
+                            {
+                                this.setTimeWait(5);
+                                this.TaskUpdateData(TaskStatus.TASK_RUNNING);
+                                this.TaskRunningRecord(TaskRunningList.TASK_YOUTUBE);
+                            }catch(Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                            }
+                            //TOAN End.
+
                             worker.ReportProgress(1); //View Update(This is very nice code)
 
                             this.playVideoStreaming(_playURL);
 
-                            //TOAN : 07/24/2019.
-                            //_uiManager
-                            string currRegion = _uiManager.getCurrentRegion();
+                            //TOAN : 07/16/2021. PCAUT처럼 Simple하게 변경
+                            ////TOAN : 07/24/2019.
+                            ////_uiManager
+                            //string currRegion = _uiManager.getCurrentRegion();
 
-                            if (!currRegion.Equals("CN"))
-                            {
-                                this.controlVideoStreaming(ControlType.FULLSCREEN);
-                            }
-                            //this.controlVideoStreaming(ControlType.FULLSCREEN);
+                            //if (!currRegion.Equals("CN"))
+                            //{
+                            //    this.controlVideoStreaming(ControlType.FULLSCREEN);
+                            //}
+                            ////this.controlVideoStreaming(ControlType.FULLSCREEN);
 
 
-                            Thread.Sleep(5000);
+                            //Thread.Sleep(5000);
+                            //TOAN End.
+
                             //Thread.Sleep(2000);
                             //this.setSystemTimer(1);
 
-                            this.setTaskFinishTimer(_finishTime);
+                            //this.setTaskFinishTimer(_finishTime);
 
                             try
                             {
@@ -216,30 +232,33 @@ namespace PerformanceUsability
                                         return;
                                     }
 
-                                    //step1 : check advertisement
-                                    //youtube영상은 광고 있는게 있고, 없는것도 있다.(다시보기 했을때)
-                                    //이경우 advertistmemt check를 하지 않으면, 원치않게 광고가 끝났을 때, 광고를 test contents로 알고 종료함
-                                    //TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
-                                    //Dependency가 있는 코드는 사용하지 않는다.
-                                    if (!currRegion.Equals("CN"))
-                                    {
-                                        if (_isSkipAdvertisement == false)
-                                        {
-                                            this.checkAdvertise();
+                                    //TOAN : 07/16/2021. PCAUT와 동일하게 변경(simple)
+                                    ////step1 : check advertisement
+                                    ////youtube영상은 광고 있는게 있고, 없는것도 있다.(다시보기 했을때)
+                                    ////이경우 advertistmemt check를 하지 않으면, 원치않게 광고가 끝났을 때, 광고를 test contents로 알고 종료함
+                                    ////TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
+                                    ////Dependency가 있는 코드는 사용하지 않는다.
+                                    //if (!currRegion.Equals("CN"))
+                                    //{
+                                    //    if (_isSkipAdvertisement == false)
+                                    //    {
+                                    //        this.checkAdvertise();
 
-                                        }
-                                    }
+                                    //    }
+                                    //}
 
-                                    //step2 : check video end
-                                    //TOAN : 07/02/2019. 별도의 timer없이 loop에서 체크.
-                                    //TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
-                                    //Dependency가 있는 코드는 사용하지 않는다.
-                                    if (!currRegion.Equals("CN"))
-                                    {
-                                        this.checkvideoEnd();
-                                    }
+                                    ////step2 : check video end
+                                    ////TOAN : 07/02/2019. 별도의 timer없이 loop에서 체크.
+                                    ////TOAN : 07/24/2019. SESC QQ Player는 youtube와 구조가 틀리기 때문에
+                                    ////Dependency가 있는 코드는 사용하지 않는다.
+                                    //if (!currRegion.Equals("CN"))
+                                    //{
+                                    //    this.checkvideoEnd();
+                                    //}
 
                                     //TOAN : 06/15/2020.
+                                    //TOAN (End)
+
                                     Thread.Sleep(1000);
                                 } while (this._exit_flag == false);
                             }
@@ -310,6 +329,7 @@ namespace PerformanceUsability
             }
 
         }
+
 
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -411,6 +431,8 @@ namespace PerformanceUsability
             //this.initSelenium(_webType);
             try
             {
+                //TOAN : 07/16/2021. PCAUT내용 적용
+                _driver.Manage().Window.Maximize();
                 _driver.Url = url;
                 //TOAN : 08/23/2018. Full Screen버튼에 click이벤트 적용 후, 다시 창모드로 전환이 된다.
                 //Video Streaming이 출력되고 난후에, Full Screen버튼을 누르면 이 현상이 없어진다.

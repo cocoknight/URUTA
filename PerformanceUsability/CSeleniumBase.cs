@@ -59,7 +59,13 @@ namespace PerformanceUsability
         //protected이상 권한이면 접근 가능하다.
 
         //public WebType _webType { get; set; }
-        protected WebType _webType { get; set; }
+
+        //TOAN : 07/15/2021. Browser Type지정
+        static public WebType _webType { get; set; }
+        //protected WebType _webType { get; set; }
+
+
+
         protected IWebDriver _driver;
         //protected Form1 _uiManager;
         public Form1 _uiManager;
@@ -145,42 +151,49 @@ namespace PerformanceUsability
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(sec);
         }
 
+        //TOAN  :07/15/2021. Chrome, Edge모두 지원하도록 코드 변경
         public void initSelenium(WebType mode)
         {
               try
                 {
-                //case1
-                string driverPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-                //System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", driverPath));
-                //IWebDriver driver = new ChromeDriver(driverPath);
 
-                //case2
-                //string cPath = System.Reflection.Assembly.GetExecutingAssembly().Location; //executable path
-                //string appPath = Path.GetDirectoryName(Application.ExecutablePath); //executable directory path
-                //System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
+                 switch(mode)
+                 {
+                    case WebType.WEB_Chrome:
+                        {
+                            string appPath = _uiManager.getDriverPath();
+                            System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
 
-                //_driver = new OpenQA.Selenium.Chrome.ChromeDriver();
+                            var options = new ChromeOptions();
+                            options.AddAdditionalCapability("useAutomationExtension", false);
+                            options.AddArguments("--ignore-certificate-errors");
+                            options.AddArguments("--ignore-ssl-errors");
 
+                            _driver = new OpenQA.Selenium.Chrome.ChromeDriver(appPath, options, TimeSpan.FromMinutes(2));
+                            break;
+                        }
+                    case WebType.WEB_EDGE:
+                        {
+                            //TOAN : 05/20/2021. Selenium with Edge Browser
+                            string appPath = _uiManager.getDriverPath();
+                            System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
 
-                //case3
-                //TOAN : 08/20/2019. chrome driver를 사용자가 선택해서 진행하도록 수정.
-                //string appPath =System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                string appPath = _uiManager.getDriverPaht();
-                System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
+                            var options = new Microsoft.Edge.SeleniumTools.EdgeOptions();
+                            options.UseChromium = true;
+                            options.AddAdditionalCapability("useAutomationExtension", false);
+                            options.AddArguments("--ignore-certificate-errors");
+                            options.AddArguments("--ignore-ssl-errors");
 
-                //TOAN :06/25/2019. add option
-                //options.add_argument("--disable-extensions")
-                var options = new ChromeOptions();
-                options.AddAdditionalCapability("useAutomationExtension", false);
-                options.AddArguments("--ignore-certificate-errors");
-                options.AddArguments("--ignore-ssl-errors");
-
-                //TOAN : 06/25/2019. increate timespan 1->2 minute
-                //If we don't put value. Default value is 1 minute
-                _driver = new OpenQA.Selenium.Chrome.ChromeDriver(appPath,options, TimeSpan.FromMinutes(2));
-                //_driver = new OpenQA.Selenium.Chrome.ChromeDriver()
-                //_driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(100/*50*/);
-
+                            //_webDriver = new Microsoft.Edge.SeleniumTools.EdgeDriver(options);
+                            _driver = new Microsoft.Edge.SeleniumTools.EdgeDriver(appPath, options, TimeSpan.FromMinutes(2));
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+                
                 }
                 catch (Exception ex)
                 {
@@ -370,7 +383,6 @@ namespace PerformanceUsability
 
                         System.Diagnostics.Debug.WriteLine("TASK_FINISH");
 
-
                         //종료 후 상태를 ListView에 기록한다.
                         _taskEndTime = System.DateTime.Now;
                         //TOAN : 04/03/2019. Double->Integer값으로 진행(double값 계산시 0.999999999와 같은 상황 발생)
@@ -401,8 +413,12 @@ namespace PerformanceUsability
                         System.Diagnostics.Debug.WriteLine("Total Hour:{0}", calToHour);
 
                         //TOAN : 04/04/2019. 소수점 3자리에서 반올림
+                        //TOAN : 07/16/2021. 1분도 안되는 짫은시간에서는 테스트가 종료되면 아래 수식에서 시간으로 바꿀때
+                        //소숫점 2자리까지 하면 값이 0이 된다. 따라서 이런 경우를 방지하기 위해
+                        //소숫점 4자리에서 반올림해서 3자리 까지 출력되게 시간을 변경 한다.
                         //double convertHour = Math.Round(calToHour, 2);   //소수점 3째자리에서 반올림, 2째자리까지만 유효하게 한다.
-                        double convertHour = Math.Round(calToHour, 2, MidpointRounding.AwayFromZero);
+                        //double convertHour = Math.Round(calToHour, 2, MidpointRounding.AwayFromZero);
+                        double convertHour = Math.Round(calToHour, 3, MidpointRounding.AwayFromZero);
                         System.Diagnostics.Debug.WriteLine("Total Convert Hour:{0}", convertHour);
 
                         //TOAN : 04/03/2019. power consumption코드 변경.

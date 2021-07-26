@@ -156,6 +156,9 @@ namespace PerformanceUsability
         //TOAN : 08/20/2019. Tester can set chrome driver for new version
         public string _driverPath;
 
+        //TOAN : 07/15/2021. update region control
+        public string _currRegion;
+
         public Form1()
         {
 
@@ -172,17 +175,36 @@ namespace PerformanceUsability
             _driverPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", _driverPath));
 
+            //TOAN : 07/15/2021. driver path fix
+            _driverPath = @"C:\autotest";
+
             //TOAN : 07/24/2019. Checl China Localization
             //접속 지역이 중국인 경우.
-            string currRegion = this.getCurrentRegion();
-            if (currRegion.Equals("CN"))
+            //TOAN : 07/15/2021. update region control
+            //string currRegion = this.getCurrentRegion();
+            _currRegion = this.getCurrentRegion();
+            //if (currRegion.Equals("CN"))
+            //TOAN : 07/15/2021. Menu Title change naver->baidu
+            if (_currRegion.Equals("CN"))
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 this.Text = "User Feeling Real Use Time Automation 2.1.1.7";
-                lblCase1.Text = "Search Naver Movie Ranking";
+                lblCase1.Text = "Search Baidu Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
                 label1.Text = "Test Model:";
                 label2.Text = "Compare Model:";
+            }
+
+            //TOAN : 07/15/2021. SEC,SESC환경에 맞게 web type변경
+            if (_currRegion.Equals("CN"))
+            {
+                CWebManager._webType = WebType.WEB_EDGE;
+                //this.txtYoutubeURL.Text = "https://v.qq.com/x/cover/mzc00200y4wycre/w0039u2wbkb.htm";
+            }
+            else
+            {
+                CWebManager._webType = WebType.WEB_Chrome;
+                //this.txtYoutubeURL.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc";
             }
 
 
@@ -210,13 +232,17 @@ namespace PerformanceUsability
 
 
             //TOAN : 06/30/2019. add WebManager
-            _webManager = new CWebManager(_webType);
+            //TOAN : 07/15/2021. code change . CWebManager._webType
+            _webManager = new CWebManager(CWebManager._webType);
+            //_webManager = new CWebManager(_webType);
             _webManager.testcase_no = "1";
             _webManager.testcase_name = lblCase1.Text;
             _webManager.connectUI(this);
 
             //TOAN : 06/30/2019. add Youtube Manager
-            _youtubeManager = new CYoutubeManager(_webType);
+            //TOAN : 07/15/2021. code change
+            //_youtubeManager = new CYoutubeManager(_webType);
+            _youtubeManager = new CYoutubeManager(CWebManager._webType);
             _youtubeManager.testcase_no = "2";
             _youtubeManager.testcase_name = lblCase2.Text;
             _youtubeManager.connectUI(this);
@@ -229,14 +255,19 @@ namespace PerformanceUsability
             _videoManager.connectUI(this);
 
             //TOAN : 06/30/2019. add File DownLoad Manager
-            _downloadManager = new CDownLoadManager(_webType);
+            //TOAN : 07/15/2021. code-change
+            //_downloadManager = new CDownLoadManager(_webType);
+            _downloadManager = new CDownLoadManager(CWebManager._webType);
             _downloadManager.connectUI(this);
             _downloadManager.testcase_no = "4";
             _downloadManager.testcase_name = lblCase7.Text;
 
             //_docManager
             //TOAN : 06/30/2019. add new PPT Manager
-            _docManager = new CDocManager(_webType);
+            //TOAN : 07/15/2021. _webType은 내부적으로 static type이기 때문에 값을 공유 한다.
+            //어떤 한개의 모듈에서 값을 바꾸면 모두 동일한 값을 사용하게 된다
+            //_docManager = new CDocManager(_webType);
+            _docManager = new CDocManager(CWebManager._webType);
             _docManager.connectUI(this);
             _docManager.testcase_no = "5";
             _docManager.testcase_name = lblCase4.Text;
@@ -298,8 +329,6 @@ namespace PerformanceUsability
 
           
         }
-
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -478,7 +507,8 @@ namespace PerformanceUsability
             
         }  
 
-      
+    
+
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {
@@ -569,9 +599,23 @@ namespace PerformanceUsability
 
             if (string.IsNullOrEmpty(txtTime2.Text))
             {
+
                 //TOAN : 06/17/2021. 시간 saving테스트
                 //txtTime2.Text = "https://www.youtube.com/watch?v=eKNLp1xjdzI";
-                txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc"; //대도서관 30분짜리 컨텐츠(실제 검증용). release용
+                //TOAN : 07/15/2021. Youtube접속 주소 region에 따라 구분 
+
+                //TOAN : 07/15/2021. region에 따라 youtube주소 변경. sesc의 경우 QQ url로 youtube진행(PCAUT 동일적용)
+                if (_currRegion.Equals("CN"))
+                {
+                    // _youtubeManager.setURL(" https://v.qq.com/x/cover/mzc00200y4wycre/w0039u2wbkb.html ");
+                    txtTime2.Text = "https://v.qq.com/x/cover/mzc00200y4wycre/w0039u2wbkb.html";
+                }
+                else
+                {
+                    txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc";//대도서관 30분짜리 컨텐츠(실제 검증용). release용
+                }
+
+                   // txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc"; //대도서관 30분짜리 컨텐츠(실제 검증용). release용
                 //txtTime2.Text = "https://www.youtube.com/watch?v=MBNQgq56egk";   //test용
 
                 //string playURL = "https://www.youtube.com/watch?v=WhSGqlqyXq0";
@@ -816,13 +860,18 @@ namespace PerformanceUsability
                         //실제 Youtube컨텐츠의 종료를 체크할수도 있지만,이경우는 streaming상황에 따라 수행시간이 틀려질수 있다.
                         //따라서 Youtube의 경우 contents상관없이 30분 task-timer로 종료시킨다.
                         //대도서관의 경우도, 31분쯤에 contents종료가 되겠지만, task finish timer가 먼저 수행될 것이다.
+
+                        //TOAN : 07/16/2021. adjust testtime
+                        //int testtime = 3;
                         int testtime = 30;
 
                         //TOAN : 07/24/2019. Add Region Check
-                        string currRegion = this.getCurrentRegion();
+                        //TOAN : 07/15/2021. code-change
+                        //string currRegion = this.getCurrentRegion();
                         _youtubeManager.setURL(playURL);
                         _youtubeManager.setTestTime(testtime);
-                        _youtubeManager.setRegion(currRegion);
+                        //_youtubeManager.setRegion(currRegion);
+                        _youtubeManager.setRegion(_currRegion);
 
                         _youtubeManager.worker.RunWorkerAsync(requestMode);
 
@@ -1846,7 +1895,7 @@ namespace PerformanceUsability
 
         }
 
-        public string getDriverPaht()
+        public string getDriverPath()
         {
             return _driverPath;
         }

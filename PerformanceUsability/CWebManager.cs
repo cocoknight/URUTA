@@ -70,6 +70,9 @@ namespace PerformanceUsability
 
         public int _finishTime;
 
+        //TOAN : 07/15/2021. 테스트 지역 정보추가
+        public string _currRegion = "";
+
         public CWebManager(WebType type) : base(type)
         {
 
@@ -117,9 +120,26 @@ namespace PerformanceUsability
                         {
 
                             this.setSystemTimer(/*600*/_finishTime);
-                            this.initSelenium(0);
-                            this.setTimeWait(100);
-                            this.TaskUpdateData(TaskStatus.TASK_RUNNING);
+                            //TOAN : 07/15/2021. WebType에 맞게 변경
+                            //this.initSelenium(0);
+                            this.initSelenium(_webType);
+
+
+                            //TOAN : 07/15/2021. Korea/China코드 구분 진행
+                            _currRegion = _uiManager.getCurrentRegion();
+
+                            //TOAN : 07/15/2021. logic add. 아래 코드에서 exception처리하지 않으면
+                            //그냥task가 종료되어 버린다. Timer에 의해 종료되도록 수정
+                            try
+                            {
+                                this.setTimeWait(100);
+                                this.TaskUpdateData(TaskStatus.TASK_RUNNING);
+                            }catch(Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                            }
+                            //TOAN End
+
                             this.TaskRunningRecord(TaskRunningList.TASK_WEBACTOR);
                             worker.ReportProgress(1); //View Update
 
@@ -128,12 +148,55 @@ namespace PerformanceUsability
 
 
                             //1time query
-                            _driver.Url = _startURL;
-                            IWebElement q = _driver.FindElement(By.Id("query"));
+                            //TOAN : 07/15/2021. logic add. 아래 코드에서 exception처리하지 않으면
+                            //그냥task가 종료되어 버린다. Timer에 의해 종료되도록 수정
+                            try
+                            {
+                                //TOAN : 07/15/2021. 기존코드 삭제
+                                /*
+                                _driver.Url = _startURL;
+                                IWebElement q = _driver.FindElement(By.Id("query"));
 
-                            q.SendKeys("최신영화순위");
-                            _driver.FindElement(By.Id("search_btn")).Click();
+                                q.SendKeys("최신영화순위");
+                                _driver.FindElement(By.Id("search_btn")).Click();
+                                */
 
+                                if (_currRegion.Equals("CN"))
+                                {
+                                    _startURL = @"http://www.baidu.com";
+                                }
+                                else
+                                {
+                                    _startURL = @"http://www.naver.com";
+                                }
+
+                                _driver.Url = _startURL;
+
+
+                                if (_currRegion.Equals("CN"))
+                                {
+                                    Thread.Sleep(3000);
+                                    IWebElement q = _driver.FindElement(By.Id("kw"));
+                                    q.SendKeys("最新电影");
+                                    //TOAN : 07/15/2021. code add
+                                    //Thread.Sleep(2000);
+                                    _driver.FindElement(By.Id("su")).Click();
+                                }
+                                else
+                                {
+                                    Thread.Sleep(3000);
+                                    IWebElement q = _driver.FindElement(By.Id("query"));
+                                    q.SendKeys("최신영화순위");
+                                    _driver.FindElement(By.Id("search_btn")).Click();
+
+                                }
+
+                            }
+                            catch(Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                            }
+                            //TOAN End
 
                             do
                             {
@@ -159,8 +222,20 @@ namespace PerformanceUsability
 
                                     //q.SendKeys("최신영화순위");
                                     //_driver.FindElement(By.Id("search_btn")).Click();
+                                    //iterateRanking_cn
+                                    //TOAN : 07/15/2021. Korea/China검증 환경 구분(China의 지역적인 한계)
+                                    if (_currRegion.Equals("CN"))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine(string.Format("TO DO: China WebSurfing"));
+                                        this.iterateRanking_cn(e);
+                                    }
+                                    else
+                                    {
+                                        this.iterateRanking(e);
+                                    }
 
-                                    this.iterateRanking(e);
+
+                                    //this.iterateRanking(e);
 
                                     //TOAN : 06/15/2020. Power-control
                                     Thread.Sleep(1000);
@@ -292,6 +367,68 @@ namespace PerformanceUsability
 
             return retValue;
         }
+
+        //TOAN : 07/15/2021. SESC(CN)환경 crawling(start)
+        public void iterateRanking_cn(DoWorkEventArgs e)
+        {
+            //China Version에 맞게 iterate ranking을 수행 한다.
+            string currentXPath_part1 = "";
+            string currentXPath_part2 = "";
+            string currentXPath_part3 = "";
+            string composeXPath = "";
+
+            currentXPath_part1 = "//*[@id='1']/div/div/div[2]/div[1]/";
+            currentXPath_part2 = "div[1]";
+            currentXPath_part3 = "/p[1]/a/img";
+
+            string xpath_p1 = "div[";
+            string xpath_variable;
+            string xpath_p3 = "]";
+
+            //TOAN : 05/24/2021. 아래 action은 의미가 없다.
+            _saveURL = _driver.Url;
+
+            //baidu에서는 1page당 2줄 8개까지 썸네일에 보인다. 화면에 보이게 한다.
+            //element index는 1부터 시작 한다.
+            for (int i = 1; i <= 8; i++)
+            {
+                if (this.workerCancelCheck(e) == true)
+                {
+                    return;
+                }
+
+                xpath_variable = i.ToString();
+                currentXPath_part2 = xpath_p1 + xpath_variable + xpath_p3;
+                composeXPath = currentXPath_part1 + currentXPath_part2 + currentXPath_part3;
+
+                System.Diagnostics.Debug.WriteLine(string.Format("compose xpath : {0}", composeXPath));
+                System.Diagnostics.Debug.WriteLine("[Web Actor]send find element ");
+                Thread.Sleep(5000);
+                //_webDriver.FindElement(By.XPath(composeXPath)).GetAttribute("value");
+                _driver.FindElement(By.XPath(composeXPath)).Click();
+                System.Diagnostics.Debug.WriteLine("[Web Actor]After find element ");
+                Thread.Sleep(7000);
+
+                //현재 Tab을 close시킨다.
+                var tabs = _driver.WindowHandles;
+                if (tabs.Count > 1)
+                {
+                    //Thread.Sleep(7000);
+                    _driver.SwitchTo().Window(tabs[1]);
+                    _driver.Close();
+                    _driver.SwitchTo().Window(tabs[0]);
+
+                    //_webDriver.Url = _saveURL;
+                    //Thread.Sleep(3000);
+                    //_webDriver.Navigate().Refresh();
+                    //page refresh
+                    //_webDriver
+                    //_webDriver.get(driver.getCurrentUrl());
+                }
+            }
+        }
+        //TOAN (end)
+
 
         public void iterateRanking(DoWorkEventArgs e)
         {

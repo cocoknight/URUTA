@@ -190,7 +190,9 @@ namespace PerformanceUsability
             {
                 case "ACTION_START":
                     {
-                        this.initSelenium(0);
+                        //TOAN : 07/16/2021. Edge, Chrome모두 지원하도록 변경
+                        this.initSelenium(_webType);
+                        //this.initSelenium(0);
                         this.setTimeWait(20);
                         this.TaskUpdateData(TaskStatus.TASK_RUNNING);
                         this.TaskRunningRecord(TaskRunningList.TASK_STORAGE_ACTOR);
