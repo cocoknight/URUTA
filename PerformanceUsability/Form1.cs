@@ -187,6 +187,7 @@ namespace PerformanceUsability
             //TOAN : 07/15/2021. Menu Title change naver->baidu
             if (_currRegion.Equals("CN"))
             {
+              
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 this.Text = "User Feeling Real Use Time Automation 2.1.1.7";
                 lblCase1.Text = "Search Baidu Movie Ranking";
@@ -506,8 +507,6 @@ namespace PerformanceUsability
             //RunningList.Items.Add(cItem);
             
         }  
-
-    
 
 
         private void groupBox1_Enter(object sender, EventArgs e)
