@@ -132,7 +132,8 @@ namespace PerformanceUsability
                             //그냥task가 종료되어 버린다. Timer에 의해 종료되도록 수정
                             try
                             {
-                                this.setTimeWait(100);
+                                //TOAN : 08/04/2021. 아래 timeWait는 무시하자.
+                                //this.setTimeWait(100);
                                 this.TaskUpdateData(TaskStatus.TASK_RUNNING);
                             }catch(Exception ex)
                             {
@@ -163,24 +164,46 @@ namespace PerformanceUsability
 
                                 if (_currRegion.Equals("CN"))
                                 {
-                                    _startURL = @"http://www.baidu.com";
+                                    //TOAN : 08/05/2021. URL Change. In case of Baidu, Frequentlly error occurs internally on Automation Testing.
+                                    //Perhaps, This is internal baidu logic. So, I'll change url to www.so.com(360)
+                                    //_startURL = @"http://www.baidu.com";
+                                    _startURL = @"http://www.so.com";
                                 }
                                 else
                                 {
                                     _startURL = @"http://www.naver.com";
                                 }
 
+
                                 _driver.Url = _startURL;
 
+                                
 
                                 if (_currRegion.Equals("CN"))
                                 {
-                                    Thread.Sleep(3000);
-                                    IWebElement q = _driver.FindElement(By.Id("kw"));
+                                    //TOAN : 08/04/2021. for -testing
+                                    //Thread.Sleep(3000);
+                                    Thread.Sleep(1000);
+                                    //Thread.Sleep(5000);
+
+                                    //TOAN : 08/04/2021. use xpath   
+                                    //IWebElement q = _driver.FindElement(By.Id("kw"));
+                                    //await IWebElement q = _driver.FindElement(By.XPath("//*[@class='s_ipt']"));
+                                    //Thread.Sleep(5000);
+                                    //IWebElement q = _driver.FindElement(By.XPath("/*[@id='form']/span[1]"));
+                                    //IWebElement q = _driver.FindElement(By.XPath("//Edit[@id='kw']"));
+                                    //q.Click();
+                                    //Thread.Sleep(1000);
+                                    //_driver.FindElement(By.Id("su")).Click();
+
+
+                                    //TOAN : 08/05/2021. search with www.so.com
+                                    IWebElement q = _driver.FindElement(By.Id("input"));
                                     q.SendKeys("最新电影");
-                                    //TOAN : 07/15/2021. code add
-                                    //Thread.Sleep(2000);
-                                    _driver.FindElement(By.Id("su")).Click();
+                                    Thread.Sleep(1000);
+                                    _driver.FindElement(By.Id("search-button")).Click();
+                                    //Thread.Sleep(3000);
+                                    Thread.Sleep(1000);
                                 }
                                 else
                                 {
@@ -377,13 +400,25 @@ namespace PerformanceUsability
             string currentXPath_part3 = "";
             string composeXPath = "";
 
-            currentXPath_part1 = "//*[@id='1']/div/div/div[2]/div[1]/";
-            currentXPath_part2 = "div[1]";
-            currentXPath_part3 = "/p[1]/a/img";
 
-            string xpath_p1 = "div[";
+            //TOAN : 08/05/2021. Below is baidu path
+            //currentXPath_part1 = "//*[@id='1']/div/div/div[2]/div[1]/";
+            //currentXPath_part2 = "div[1]";
+            //currentXPath_part3 = "/p[1]/a/img";
+
+            //string xpath_p1 = "div[";
+            //string xpath_variable;
+            //string xpath_p3 = "]";
+
+            //TOA : 08/05/2021. Below is www.so.com path
+            currentXPath_part1 = "//*[@id='mohe-relation_video_rank']/div/div[3]/div[2]/div[1]/ul/";
+            currentXPath_part2 = "li[1]";
+            currentXPath_part3 = "/div/a/img";
+
+            string xpath_p1 = "li[";
             string xpath_variable;
             string xpath_p3 = "]";
+
 
             //TOAN : 05/24/2021. 아래 action은 의미가 없다.
             _saveURL = _driver.Url;

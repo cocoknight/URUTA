@@ -551,12 +551,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1264, 643);
+            this.ClientSize = new System.Drawing.Size(1250, 662);
             this.Controls.Add(this.grpRunning);
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.1.9";
+            this.Text = "체감 실사용시간 측정 2.1.2.0";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();

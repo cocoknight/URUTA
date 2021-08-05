@@ -72,6 +72,8 @@ using System.Globalization;
 
 //TOAN : 08/20/2019. chrome driver폴더 선택을 위해 사용
 using Microsoft.WindowsAPICodePack.Dialogs;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 
 namespace PerformanceUsability
 {
@@ -159,6 +161,10 @@ namespace PerformanceUsability
         //TOAN : 07/15/2021. update region control
         public string _currRegion;
 
+
+        //TOAN : 08/04/2021. for debugging
+        protected IWebDriver _driver;
+
         public Form1()
         {
 
@@ -170,6 +176,7 @@ namespace PerformanceUsability
             CheckForIllegalCrossThreadCalls = false;
 
             InitializeComponent();
+
 
             //TOAN : 08/20/2019. Set Default driver path(Below is default path)
             _driverPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -188,7 +195,8 @@ namespace PerformanceUsability
             if (_currRegion.Equals("CN"))
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
-                this.Text = "User Feeling Real Use Time Automation 2.1.1.7";
+                //this.Text = "User Feeling Real Use Time Automation 2.1.1.9";
+                this.Text = "Actual Use Time Test Automation 2.1.2.0";
                 lblCase1.Text = "Search Baidu Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
                 label1.Text = "Test Model:";
@@ -508,6 +516,7 @@ namespace PerformanceUsability
         }  
 
     
+
 
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -1500,7 +1509,7 @@ namespace PerformanceUsability
         {
             //System Timer등록시간 디버깅
             //System.Diagnostics.Debug.WriteLine("System Moitor Timer Start:{0}", this.getCurrentTime());
-            System.Diagnostics.Debug.WriteLine("System Moitor Timer Expire:{0}", this.getCurrentTime());
+            //System.Diagnostics.Debug.WriteLine("System Moitor Timer Expire:{0}", this.getCurrentTime());
 
 
             string batterylife;
@@ -1898,6 +1907,88 @@ namespace PerformanceUsability
         public string getDriverPath()
         {
             return _driverPath;
+        }
+
+        private  void btn_browser_Click(object sender, EventArgs e)
+        {
+            string appPath = this.getDriverPath();
+            System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", appPath));
+
+            var options = new Microsoft.Edge.SeleniumTools.EdgeOptions();
+            options.UseChromium = true;
+            options.AddAdditionalCapability("useAutomationExtension", false);
+            options.AddArguments("--ignore-certificate-errors");
+            options.AddArguments("--ignore-ssl-errors");
+
+            //_webDriver = new Microsoft.Edge.SeleniumTools.EdgeDriver(options);
+            _driver = new Microsoft.Edge.SeleniumTools.EdgeDriver(appPath, options, TimeSpan.FromMinutes(2));
+
+
+            //_driver.Url = @"http://www.baidu.com";
+            //_driver.Url = @"http://www.naver.com";
+            //_driver.Url = @"http://www.sogou.com";
+            _driver.Url = @"http://www.so.com";
+            Thread.Sleep(3000);
+
+            try
+            {
+
+                //TOAN : 08/05/2021. baidu issue or edge issue
+                //IWebElement q = _driver.FindElement(By.Id("kw"));
+                ////IWebElement q = _driver.FindElement(By.ClassName("s_ipt"));
+                ////q.Click();
+                //q.SendKeys("最新电影");
+
+                //Thread.Sleep(2000);
+                //_driver.FindElement(By.Id("su")).Click();
+
+
+                //TOAN : 08/05/2021. www.naver.com test
+                //IWebElement q = _driver.FindElement(By.Id("query"));
+                //q.SendKeys("최신영화순위");
+                //_driver.FindElement(By.Id("search_btn")).Click();
+
+
+                //TOAN : 08/05/2021. www.sogou.com test
+                //IWebElement q = _driver.FindElement(By.Id("query"));
+                //IWebElement q = _driver.FindElement(By.ClassName("s_ipt"));
+                //q.Click();
+                //q.SendKeys("最新电影");
+
+                //TOAN : 08/05/2021. based on zhe tan's opinion.
+                //www.so.com is more popular
+                IWebElement q = _driver.FindElement(By.Id("input"));
+                q.SendKeys("最新电影");
+                Thread.Sleep(1000);
+                _driver.FindElement(By.Id("search-button")).Click();
+
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            }
+
+
+
+
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            //input search string
+            //IWebElement q = _driver.FindElement(By.XPath("//Edit[@id='kw']"));
+
+            try
+            {
+                IWebElement q = _driver.FindElement(By.Id("kw"));
+                //q.Click();
+                q.SendKeys("最新电影");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            }
         }
     }  //End of Form Class 
 
