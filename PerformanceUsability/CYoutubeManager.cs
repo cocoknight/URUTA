@@ -85,8 +85,11 @@ namespace PerformanceUsability
         public int _finishTime ;
 
         //TOAN : 07/24/2019. Test Region설정
-        public string _testRegion; 
+        public string _testRegion;
 
+
+        //TOAN : 06/25/2021. retry counter
+        public int _youtube_retry_count = 0;
         public CYoutubeManager()
         {
             //System.Diagnostics.Debug.WriteLine("key:{0}, value:{1}",currObj.Key,currObj.Value);
@@ -428,38 +431,89 @@ namespace PerformanceUsability
             //_driver = new ChromeDriver();
             //_driver.Url = "https://www.youtube.com/watch?v=WhSGqlqyXq0";
 
-            //this.initSelenium(_webType);
+
+
+            //TOAN : 11/04/2021. PCAUT style - start
+            bool b_exception_fire = false;
+
+            do
+            {
+                //TOAN : 07/15/2021.
+                b_exception_fire = false;
+                try
+                {
+                    _driver.Manage().Window.Maximize();
+                    _driver.Url = _playURL;
+                }
+                //catch (OpenQA.Selenium.WebDriverException ex)
+                //{
+                //    System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                //}
+
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                    //TOAN : 07/15/2021. code 보강
+                    b_exception_fire = true;
+                    _youtube_retry_count = _youtube_retry_count + 1;
+                }
+
+                //_youtube_retry_count = _youtube_retry_count + 1;
+                Thread.Sleep(2000);
+
+            } while (b_exception_fire == true && _youtube_retry_count < 3);
+
+            _youtube_retry_count = 0;
+
             try
             {
-                //TOAN : 07/16/2021. PCAUT내용 적용
-                _driver.Manage().Window.Maximize();
-                _driver.Url = url;
-                //TOAN : 08/23/2018. Full Screen버튼에 click이벤트 적용 후, 다시 창모드로 전환이 된다.
-                //Video Streaming이 출력되고 난후에, Full Screen버튼을 누르면 이 현상이 없어진다.
-                //즉, 해당 element가 존재하지 않아서 발생한 이슈는 아니다.
-                //우선 Sleep Command로 이슈가 개선되는지 확인해 보자. sleep command로 증상 개선을 확인 함.
-
-                _isSkipAdvertisement = false;
-                _targetExist = false;
-                _isVideoEnd = false;
-                _isFinishTimerElapsed = false;
-                _isSkipAdvertisement = false;
-                _exit_flag = false;
-
-                Thread.Sleep(6000);
-                //Application.DoEvents();
+                ////*[@id="movie_player"]/div[5]/button
+                //IWebElement q = _webDriver.FindElement(By.Id("query"));
+                //"//button[@class='ytp-ad-skip-button ytp-button']"
+                IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[5]/button"));
+                play_button.Click();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
-                throw ex;
             }
-            finally
-            {
-
-            }
+            //TOAN : 11/04/2021. PCAUT style - end
 
 
+
+
+            //TOAN : 11/04/2021. original code-start
+            //            try
+            //            {
+            //                //TOAN : 07/16/2021. PCAUT내용 적용
+            //                _driver.Manage().Window.Maximize();
+            //                _driver.Url = url;
+            //                //TOAN : 08/23/2018. Full Screen버튼에 click이벤트 적용 후, 다시 창모드로 전환이 된다.
+            //                //Video Streaming이 출력되고 난후에, Full Screen버튼을 누르면 이 현상이 없어진다.
+            //                //즉, 해당 element가 존재하지 않아서 발생한 이슈는 아니다.
+            //                //우선 Sleep Command로 이슈가 개선되는지 확인해 보자. sleep command로 증상 개선을 확인 함.
+
+            //                _isSkipAdvertisement = false;
+            //                _targetExist = false;dowor
+            //                _isVideoEnd = false;
+            //                _isFinishTimerElapsed = false;
+            //                _isSkipAdvertisement = false;
+            //                _exit_flag = false;
+
+            //Thread.Sleep(6000);
+            //                //Application.DoEvents();
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            //                throw ex;
+            //            }
+            //            finally
+            //            {
+
+            //            }
+
+            //TOAN : 11/04/2021. original cod end
         }
 
         public void controlVideoStreaming(ControlType mode)
