@@ -317,6 +317,9 @@ namespace PerformanceUsability
             _pptPresentation = _pptApplication.Presentations.Add(Office.MsoTriState.msoTrue);
 
             _customLayout = _pptPresentation.SlideMaster.CustomLayouts[PpSlideLayout.ppLayoutText];
+
+            //_pptApplication.Visible = true;
+
         }
 
         public void initPPTAutomation()

@@ -518,7 +518,6 @@ namespace PerformanceUsability
     
 
 
-
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
@@ -621,7 +620,10 @@ namespace PerformanceUsability
                 }
                 else
                 {
+                    //TOAN : 01/07/2021. youtube확인하기
+                    //txtTime2.Text = "https://www.youtube.com/watch?v=DopcD8gJW5Q";
                     txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc";//대도서관 30분짜리 컨텐츠(실제 검증용). release용
+
                 }
 
                    // txtTime2.Text = "https://www.youtube.com/watch?v=IVWeOQA9lAc"; //대도서관 30분짜리 컨텐츠(실제 검증용). release용

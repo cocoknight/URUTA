@@ -174,9 +174,9 @@ namespace PerformanceUsability
                                     _startURL = @"http://www.naver.com";
                                 }
 
-
+                                //TOAN : 01/07/2021. 
+                                _driver.Manage().Window.Maximize();
                                 _driver.Url = _startURL;
-
                                 
 
                                 if (_currRegion.Equals("CN"))
