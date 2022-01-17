@@ -209,9 +209,9 @@
             this.lblCase3.AutoSize = true;
             this.lblCase3.Location = new System.Drawing.Point(56, 98);
             this.lblCase3.Name = "lblCase3";
-            this.lblCase3.Size = new System.Drawing.Size(201, 15);
+            this.lblCase3.Size = new System.Drawing.Size(214, 15);
             this.lblCase3.TabIndex = 7;
-            this.lblCase3.Text = "Movie Play with Media Player";
+            this.lblCase3.Text = "Movie Play with Movies and TV";
             // 
             // chkLocalPlayer
             // 
@@ -563,7 +563,7 @@
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.2.1";
+            this.Text = "체감 실사용시간 측정 2.1.2.2";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();

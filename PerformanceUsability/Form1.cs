@@ -196,8 +196,9 @@ namespace PerformanceUsability
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.9";
-                this.Text = "Actual Use Time Test Automation 2.1.2.0";
-                lblCase1.Text = "Search Baidu Movie Ranking";
+                this.Text = "Actual Use Time Test Automation 2.1.2.2";
+                //lblCase1.Text = "Search Baidu Movie Ranking";
+                lblCase1.Text = "Search 360 Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
                 label1.Text = "Test Model:";
                 label2.Text = "Compare Model:";
@@ -337,7 +338,6 @@ namespace PerformanceUsability
 
           
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Form Load");
@@ -411,6 +411,7 @@ namespace PerformanceUsability
             //    //_webActor.refreshPage();
             //}
         }
+
 
         private void groupSetting_Enter(object sender, EventArgs e)
         {
@@ -516,7 +517,6 @@ namespace PerformanceUsability
         }  
 
     
-
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {

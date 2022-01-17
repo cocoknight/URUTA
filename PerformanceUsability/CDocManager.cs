@@ -185,6 +185,7 @@ namespace PerformanceUsability
                 this.TaskUpdateData(TaskStatus.TASK_FINISH);
                 this.TaskUpdateView(TaskStatus.TASK_FINISH);
 
+
                 //TOAN : 07/02/2019. 
                 //Get LastTask and compare current task.
                 //If it is not last, run next task, If It is last, run first task

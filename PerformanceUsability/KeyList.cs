@@ -7,6 +7,7 @@
     2019-01-02 : Make a SingleTone Class
     2019-03-31 : Add key string for CReportMaker
     2019-04-04 : Add key for Total Time 
+    
 --***********************************************************************************************************/
 
 
@@ -49,6 +50,9 @@ namespace PerformanceUsability
             k_test_end_time = "End Time";
             k_test_start_battery = "Start Battery(%)";
             k_test_low_battery = "Low Battery(%)";
+
+           
+           
         }
 
     

@@ -4,9 +4,11 @@
     This file is licenced under a Creative Commons license: 
     http://creativecommons.org/licenses/by/2.5/ 
 
-  2019-06-30 : Add new Video Play with Window Medis Player Automation class
-  2019-06-30 : Background Worker를 사용시 다음과 같이 역할 분담을 한다.
-  
+  .2019-06-30 : Add new Video Play with Window Medis Player Automation class
+  .2019-06-30 : Background Worker를 사용시 다음과 같이 역할 분담을 한다.
+  .2022-01-10 : Prepare 2.1.2.2 version release
+   - WMP(Window Media Player) -> Movies & TV로 Player변경 진행
+   - 각 모델 별 시험 결과 및 Base및 개발 모델 시험 결과에도 "Total Running Time"추가 할 것
 --***********************************************************************************************************/
 
 using System;
@@ -22,6 +24,9 @@ using System.ComponentModel;
 using System.Threading;
 using OpenQA.Selenium.Remote;
 using System.IO;
+
+//using System.Windows.Forms;
+
 
 namespace PerformanceUsability
 {
@@ -79,7 +84,9 @@ namespace PerformanceUsability
                     }
                 }
 
-                this.terminateVideo();
+                //TOAN : 01/20/2022. change WMP->Movies & TV
+                this.terminateVideo_Movies_and_TV();
+                //this.terminateVideo();
                 e.Cancel = true;
                 _exit_flag = true;
                 retValue = true;
@@ -94,6 +101,7 @@ namespace PerformanceUsability
             string argument = e.Argument as string;
             this._exit_flag = false;
 
+
                 switch (argument)
                 {
                 case "ACTION_START":
@@ -102,8 +110,10 @@ namespace PerformanceUsability
                          this.TaskUpdateData(TaskStatus.TASK_RUNNING);
                          this.TaskRunningRecord(TaskRunningList.TASK_MEDIAPLAYER);
                          worker.ReportProgress(1); //View Update
-                        
-                         playVideo(_filepath);
+
+                        //TOAN : 01/10/2022. 비디오플레이어 변경. WMP->Movies & TV
+                        //playVideo(_filepath);
+                        playVideo_Movie_and_TV(_filepath);
 
                         try
                         {
@@ -227,6 +237,25 @@ namespace PerformanceUsability
             _filepath = filename;
         }
 
+        //TOAN : 01/10/2022. Player변경 테스트 WMP->Movies&TV
+        
+        public async void playVideo_Movie_and_TV(string filename)
+        {
+            //TOAN : 01/20/2022. 기존 filepath무시하고 hard-coding test해보자.
+            int playOffset = 7;
+            _duration_time = this.checkPlayTime();
+            _duration_time += playOffset;
+
+            this.setSystemTimer(_duration_time);
+
+            System.Diagnostics.Debug.WriteLine("total duration seconds:{0}", _duration_time);
+            //var videoFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(@"C:\autotest\Split.avi");
+            var videoFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(filename);
+            var success = await Windows.System.Launcher.LaunchFileAsync(videoFile);
+        }
+            
+        //TOAN End
+
         public void playVideo(string filename)
         {
             //TOAN : 01/20/2019. playtime을 계산해야 한다.
@@ -263,6 +292,18 @@ namespace PerformanceUsability
         {
             get;
             set;
+        }
+
+        //TOAN : 01/10/2021. Movie Player변경
+        //WMP -> Movies & TV
+        public void terminateVideo_Movies_and_TV()
+        {
+            var proc = Process.GetProcessesByName("Video.UI");
+
+            if (proc.Length > 0)
+            {
+                proc[proc.Length - 1].Kill();
+            }
         }
 
         public void terminateVideo()

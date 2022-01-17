@@ -26,6 +26,9 @@
     Excel Cell Merge : https://stackoverflow.com/questions/532199/merging-cells-in-excel-using-c-sharp
     get_Range Error수정 : https://www.codeflair.net/2014/01/11/object-does-not-contain-a-definition-for-get_range-in-excel-c/
     Alignment 지정 : https://stackoverflow.com/questions/22535769/c-sharp-and-excellibrary-how-to-right-align-cells
+
+    2022-01-22 : 최종 판정 출력 양식 변경
+    - Total Running Time 필드 추가
 --***********************************************************************************************************/
 
 using System;
@@ -105,6 +108,9 @@ namespace PerformanceUsability
         Range _currentModel;
         Range _currentTestcase;
 
+        //TOAN : 01/12/2022. keylist interface추가.
+        protected KeyList _keyList;
+
         public CTestDecision()
         {
             //initialize Microsoft Excel
@@ -121,6 +127,9 @@ namespace PerformanceUsability
 
             _tcListSrc = new List<Dictionary<string, string>>(); 
             _tcListCompare = new List<Dictionary<string, string>>();
+
+            //TOAN : 01/12/2022. keylist instance추가.
+            _keyList = KeyList.Instance;
 
             //TOAN : 04/07/2019. Low Battery 수식 테스트 용도
             //TOAN : 06/15/2020. 현재 자동화설정에서 3%가 최소 설정으로 되어 있다.
@@ -207,7 +216,9 @@ namespace PerformanceUsability
                             //TOAN : 04/10/2019. key구성은 excel load할때 한번만 수행. dest을 open할때는 중복수행하면 안된다.
                             this.composeKeyList(_ws_src, _currentTestcase, _kTCColumnList);
 
-                            this.composeTaskList(_ws_src, _currentTestcase, _tcListSrc);
+                            //TOAN : 01/12/2022. 출력 양식 변경에 따른 코드 수정.
+                            this.composeTaskListV2(_ws_src, _currentTestcase, _tcListSrc);
+                            //this.composeTaskList(_ws_src, _currentTestcase, _tcListSrc);
 
 
                             //Debugging
@@ -282,7 +293,9 @@ namespace PerformanceUsability
 
                             System.Diagnostics.Debug.WriteLine("Find Result:{0}", searchResult);
                             //this.composeTaskList(currentTestCase, _tcListCompare);
-                            this.composeTaskList(_ws_dest, _currentTestcase, _tcListCompare);
+                            //TOAN : 01/12/2022. 출력 양식 변경에 따른 코드 수정
+                            //this.composeTaskList(_ws_dest, _currentTestcase, _tcListCompare);
+                            this.composeTaskListV2(_ws_dest, _currentTestcase, _tcListCompare);
 
                         }
                         catch (Exception ex)
@@ -396,6 +409,87 @@ namespace PerformanceUsability
 
         }
 
+
+        //TOAN : 01/12/2022.
+        //각자의 시험 결과 파일에 "Average Power Consumption"과 "Total Running Time"이 있기 때문에
+        //각 모델의 검증,비교 모델의 시험 결과를 open할 때,
+        void composeTaskListV2(Object ws, Object targetRecord, List<Dictionary<string, string>> currList)
+        {
+
+            Range sRange = targetRecord as Range;
+            Worksheet sWs = ws as Worksheet;
+            System.Diagnostics.Debug.WriteLine("Range Row:{0},Column:{1}", sRange.Row, sRange.Column);
+
+            //sRange의 Cell값을 Dictionary의 키값으로 사용한다.
+            //this.composeKeyList(sRange);
+            //this.composeKeyList(sWs, sRange);
+            //TOAN : 04/09/2019. code change
+            //TOAN : 04/10/2019. composeTaskList는 Excel파일 loading할때 갱신되므로 이함수안에 있으면
+            //_kTCColumnList을 두번수행하는 결과가 된다.
+            //this.composeKeyList(sWs, sRange, _kTCColumnList);
+
+            //실수행된 Testcase를 Dictionary List Collection에 추가 한다.
+            //Range를 한줄 밑으로 옮겨서 Testcase결과를 가지고 온다.
+            Range startRange = sWs.Cells[sRange.Row + 1, sRange.Column];
+            System.Diagnostics.Debug.WriteLine("Range Row:{0},Column:{1}", startRange.Row, startRange.Column);
+
+            Range r = startRange.End[XlDirection.xlDown];
+            int end_row = r.Row;
+            int end_col = r.Column;
+
+            System.Diagnostics.Debug.WriteLine("Range End Row:{0},End Column:{1}", end_row, end_col);
+
+            //TOAN : 01/12/2022. Range에서 끝의 2개 row는 제거해야 한다.
+            //즉, 2개를 제외하고 range을 재구성 해야 한다.
+
+            end_row = end_row - 2;
+            r = sWs.Cells[end_row, end_col];
+
+            //xlDown이 적용된 제일 마지막 셀을 리턴함.
+            //foreach (Range ran in _ws_src.Range["c8", r])  //TEST OK. 하지만 이경우는 range이 start가 상수("C8")이므로 적합하지 않다.
+
+            int loop_index = 0;
+            //이중 for-loop을 사용하자.
+            foreach (Range ran in sWs.Range[startRange, r]) //TEST OF
+            {
+                //System.Diagnostics.Debug.WriteLine("Range Value:{0}", ran.Value);
+                System.Diagnostics.Debug.WriteLine("Range Value:{0}", ran.Value as string);
+                _tcDic = new Dictionary<string, string>();
+                Range columnRange = ran.End[XlDirection.xlToRight];
+
+                foreach (Range i_ran in sWs.Range[ran, columnRange])
+                {
+                    //_tcDic.Add(_kTCColumnList[loop_index], ran.Value);
+                    //String.Format("LoadContent: Asset Name : {0}". theAsset))
+                    // _tcDic = new Dictionary<string, string>();
+                    //currKeyList는 _kTCColumnList로 HardCoding되어 있다.
+                    Object currObj = i_ran.Value as object;
+                    System.Diagnostics.Debug.WriteLine(String.Format("Real Value:{0}", currObj.ToString()));
+                    _tcDic.Add(_kTCColumnList[loop_index], currObj.ToString());
+                    loop_index += 1;
+
+                }
+                loop_index = 0;
+                currList.Add(_tcDic);
+
+            }
+            //End of For-Loop
+
+            //TOAN : 04/07/2019. List-Collection에 값을 출력하자. List Collection의 원소들은 Dictioanry이다.
+            //foreach문은 Case1, Case어떤 형태도 가능하다.
+            //Case 1: var형태를 사용한 루프 순회
+
+            foreach (var currTc in currList)
+            {
+                foreach (var currObj in currTc)
+                {
+                    System.Diagnostics.Debug.WriteLine("key:{0}, value:{1}", currObj.Key, currObj.Value);
+                }
+            }
+
+
+        }
+
         //Third Version(This is real version)
         //Compose Key-List확인할 것.
         void composeTaskList(Object ws,Object targetRecord, List<Dictionary<string, string>> currList)
@@ -418,6 +512,7 @@ namespace PerformanceUsability
             System.Diagnostics.Debug.WriteLine("Range Row:{0},Column:{1}", startRange.Row, startRange.Column);
 
             Range r = startRange.End[XlDirection.xlDown];
+            
             //xlDown이 적용된 제일 마지막 셀을 리턴함.
             //foreach (Range ran in _ws_src.Range["c8", r])  //TEST OK. 하지만 이경우는 range이 start가 상수("C8")이므로 적합하지 않다.
 
@@ -691,17 +786,129 @@ namespace PerformanceUsability
 
 
             System.Diagnostics.Debug.WriteLine(String.Format("List Size TestMode:{0},CompareMode:{1}", listCountA,listCountB));
-            _averagePower = this.getAveragePower(_tcListSrc, numofTC);
-            _com_averagePower = this.getAveragePower(_tcListCompare, numofTC);
 
-            _finalDecision = this.getfinalDecision(_averagePower,_com_averagePower);
+            //TOAN : 01/12/2022. 출력 양식에 따른 코드 변경
+            //_averagePower = this.getAveragePower(_tcListSrc, numofTC);
+            //_com_averagePower = this.getAveragePower(_tcListCompare, numofTC);
+            //_finalDecision = this.getfinalDecision(_averagePower,_com_averagePower);
+
+            Dictionary<string, string> accumulate_info_src = this.getAveratePower_and_RunningTime(_tcListSrc, numofTC);
+            Dictionary<string, string> accumulate_info_dest = this.getAveratePower_and_RunningTime(_tcListCompare, numofTC);
+
+            _averagePower = Double.Parse(accumulate_info_src[_keyList.k_power_consumption_wh].ToString());
+            _com_averagePower = Double.Parse(accumulate_info_dest[_keyList.k_power_consumption_wh].ToString());
+            _finalDecision = this.getfinalDecision(_averagePower, _com_averagePower);
             System.Diagnostics.Debug.WriteLine(String.Format("Final Decision:{0}", _finalDecision));
 
-
             //이제 모든 데이터가 취합되어졌으므로 결과를 출력하자.
-            this.makeFinalReport(_averagePower, _com_averagePower,_finalDecision);
+            //TOAN : 01/12/2022. 출력 양식 변경에 따른 코드 변경
+            //this.makeFinalReport(_averagePower, _com_averagePower,_finalDecision);
+            this.makeTestReport(accumulate_info_src, accumulate_info_dest,_finalDecision);
+
         }//End of makeDecision 
 
+        //TOAN : 01/12/2021. new version of makeFinalReport
+        void makeFinalReport(double srcAveragePower, 
+                             double destAveragePower,
+                             double srcRunnginTime,
+                             double destRunningTime,
+                             bool decision)
+        {
+
+        }
+        //TOAN End
+
+        //TOAN : 01/12/2022. 출력양식 변경("Total Running Time")에 따른 코드 변경
+        void makeTestReport(Dictionary<string, string> accumulate_info_src, 
+                            Dictionary<string, string> accumulate_info_dest,
+                            bool decision)
+        {
+            double src_average_power = 0;
+            double src_running_time = 0;
+
+
+            double dest_average_power = 0;
+            double dest_running_time = 0;
+            //최종 판정 결과를 출력하자.
+            try
+            {
+                //Data parsing form dictionary
+                src_average_power = Double.Parse(accumulate_info_src[_keyList.k_power_consumption_wh].ToString());
+                src_running_time = Double.Parse(accumulate_info_src[_keyList.k_running_time].ToString());
+
+                dest_average_power = Double.Parse(accumulate_info_dest[_keyList.k_power_consumption_wh].ToString()); ;
+                dest_running_time = Double.Parse(accumulate_info_dest[_keyList.k_running_time].ToString()); ;
+
+
+                _app = new Microsoft.Office.Interop.Excel.Application();
+                _wb_decision = _app.Workbooks.Add(XlSheetType.xlWorksheet);
+                _ws_decision = (Worksheet)_app.ActiveSheet;
+
+                _startRow = 4;
+                _startCol = 3; //C열부터 시작.
+
+                _currRow = _startRow;
+                _currCol = _startCol;
+
+                Range startRange = _ws_decision.Cells[_currRow, _currCol];
+                System.Diagnostics.Debug.WriteLine(string.Format("Start Range's Row:{0},Column:{1}", startRange.Row, startRange.Column));
+
+                //Print Test Model Test Report. 아래 함수를 하나 호출했을때 검증모델의 평균소비전력 포함 출력
+                this.printDecisionResult(startRange,
+                                         _kTestInfoList,
+                                         _kTCColumnList,
+                                         _tcListSrc,
+                                         _infoDicSrc);
+                //print src AveragePower
+                //this.printAveragePower
+                startRange = _ws_decision.Cells[_currRow, _currCol];
+                int numOfCols = _kTCColumnList.Count; //testcase상세 리스트의 갯수를 가지고 온다.
+                //this.printAveragePower(startRange, numOfCols, srcAveragePower);
+                string columnValue = "";
+                columnValue = "Average Power Consumption";
+                this.printAccumulateValue(columnValue, startRange, numOfCols, src_average_power,"Wh");
+
+                columnValue = "Total Running Time";
+                this.printAccumulateValue(columnValue, startRange, numOfCols, src_running_time, "hr");
+
+
+                startRange = _ws_decision.Cells[_currRow, _currCol];
+                System.Diagnostics.Debug.WriteLine(string.Format("Start Range's Row:{0},Column:{1}", startRange.Row, startRange.Column));
+
+                //Print Compare Model Test Report. 아래 함수를 하나 호출했을때 비교모델의 평균소비전력 포함 출력
+                //TOAN : 04/10/2019. Temporary skip
+                this.printDecisionResult(startRange,
+                                         _kTestInfoList,
+                                         _kTCColumnList,
+                                         _tcListCompare,
+                                         _infoDicDest);
+
+                startRange = _ws_decision.Cells[_currRow, _currCol];
+                //this.printAveragePower(startRange, numOfCols, destAveragePower);
+                columnValue = "Average Power Consumption";
+                this.printAccumulateValue(columnValue, startRange, numOfCols, dest_average_power, "Wh");
+
+                columnValue = "Total Running Time";
+                this.printAccumulateValue(columnValue, startRange, numOfCols, dest_running_time, "hr");
+
+                //Print Final Decision
+                this.printFinalDecistion(numOfCols, decision);
+
+                //Save all worksheet fo excel file
+                this.savetofile();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception :{0}", ex.ToString());
+                throw ex;
+            }
+            finally
+            {
+                _wb_decision.Close();
+                _app.Quit();
+            }
+
+        }
         void makeFinalReport(double srcAveragePower, double destAveragePower, bool decision)
         {
             //최종 판정 결과를 출력하자.
@@ -765,6 +972,8 @@ namespace PerformanceUsability
 
         }
 
+        
+
         void printFinalDecistion(int area,bool finalDecision)
         {
             string displayResult;
@@ -791,6 +1000,37 @@ namespace PerformanceUsability
             _currRow += 1;
             _currCol = _startCol;
         }
+
+
+        //TOAN START: 01/12/2022
+        void printAccumulateValue(string colName, Range start, int area, double power, string unit)
+        {
+
+            //_ws_decision.Cells[_currRow, _currCol] = power.ToString() + "Wh"; 
+            //Range("A2:A5").Merge
+            System.Diagnostics.Debug.WriteLine(string.Format("area size:{0}", area));
+            _ws_decision.Cells[_currRow, _currCol] = colName;
+            _currCol += 1;
+            _ws_decision.Cells[_currRow, _currCol] = power.ToString() + unit;
+
+
+            int areasize = _currCol + area - /*1*/2;
+            System.Diagnostics.Debug.WriteLine(string.Format("calculation area size:{0}", areasize));
+            Range range = _ws_decision.get_Range((object)_ws_decision.Cells[_currRow, _currCol], (object)_ws_decision.Cells[_currRow, areasize]);
+            range.Merge(true);
+            range.Interior.ColorIndex = 36;
+            range.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+            range.VerticalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+
+            //Range range = _ws_decision.Range[_ws_src.Cells[_currRow, _currCol], _ws_src.Cells[_currRow, areasize]];
+            // Excel.Range range = ws.get_Range(ws.Cells[1, 1], ws.Cells[1, 2]);
+
+            //_ws_decision.Cells[_currRow,].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            //_ws_decision.Cells[$"A{row}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            _currRow += 1;
+            _currCol = _startCol;
+        }
+        //TOAN END
 
         void printAveragePower(Range start,int area,double power)
         {
@@ -948,6 +1188,7 @@ namespace PerformanceUsability
 
         }
 
+
         bool getfinalDecision(double srcAveragePower,double compareAveragePower)
         {
             bool retValue = false;
@@ -1020,10 +1261,108 @@ namespace PerformanceUsability
             return testCount;
         }
 
+
+        Dictionary<string, string> getAveratePower_and_RunningTime(List<Dictionary<string, string>> currList, int testStep)
+        {
+            Dictionary<string, string> retValue = new Dictionary<string, string>();
+
+            _usagedTime = 0;
+
+            double calAverage = 0;
+            double usagedTime = 0;
+            double usagedPower = 0;
+            int loopCounter = 0;
+            //STEP1 : testStep까지 루프 순회
+            foreach (var currTc in currList)
+            {
+                if (loopCounter != testStep)
+                {
+                    foreach (var currObj in currTc)
+                    {
+                        System.Diagnostics.Debug.WriteLine("key:{0}, value:{1}", currObj.Key, currObj.Value);
+                        if (currObj.Key.Equals("Task Discharge(wh)"))
+                        {
+
+                            string strTarget = currObj.Value;
+                            Regex r = new Regex(@"[0-9]+\.[0-9]+");
+                            //string strTmp = Regex.Replace(strTarget, @"\D", "");
+                            //double nTmp = double.Parse(strTmp);
+                            //usagedPower = usagedPower + nTmp;
+                            //문자열에서 실수값을 추출
+                            if (strTarget.Contains("."))
+                            {
+                                Match m = r.Match(strTarget);
+                                System.Diagnostics.Debug.WriteLine(string.Format("Match Value:{0}", m.Value));
+                                double cVal = double.Parse(m.Value);
+                                usagedPower = usagedPower + cVal;
+                            }
+                            else
+                            {
+                                string strTmp = Regex.Replace(strTarget, @"\D", "");
+                                double nTmp = double.Parse(strTmp);
+                                usagedPower = usagedPower + nTmp;
+                            }
+
+                            System.Diagnostics.Debug.WriteLine(string.Format("Usaged Power:{0}", usagedPower));
+                        }
+
+                        if (currObj.Key.Equals("Running Time"))
+                        {
+                            string strTarget = currObj.Value;
+                            Regex r = new Regex(@"[0-9]+\.[0-9]+");
+                            if (strTarget.Contains("."))
+                            {
+                                Match m = r.Match(strTarget);
+                                double cVal = double.Parse(m.Value);
+                                //TOAN : 01/12/2022. 데이터 멤버 변수로 변경
+                                //usagedTime = usagedTime + cVal;
+                                _usagedTime = _usagedTime + cVal;
+                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
+                            }
+                            else
+                            {
+                                string strTmp = Regex.Replace(strTarget, @"\D", "");
+                                double nTmp = double.Parse(strTmp);
+                                //TOAN : 06/15/2020. 시간 수식 오류 수정
+                                //usagedPower = usagedPower + nTmp;
+                                //TOAN : 01/12/2022. 데이터 멤버 변수로 변경
+                                //usagedTime = usagedTime + nTmp;
+                                _usagedTime = _usagedTime + nTmp;
+                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
+                            }
+
+                        }
+                    }
+                    loopCounter += 1;
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+
+            //TOAN : 01/12/2022. 데이터 멤버를 이용한 형태로 코드 변경
+            System.Diagnostics.Debug.WriteLine(string.Format("Usaged Power:{0}", usagedPower));
+            System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
+            //System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
+            //STEP2 : 
+            //calAverage = Math.Round(usagedPower/ usagedTime, 1, MidpointRounding.AwayFromZero);
+            calAverage = Math.Round(usagedPower / _usagedTime, 1, MidpointRounding.AwayFromZero);
+
+            retValue.Add(_keyList.k_running_time, _usagedTime.ToString());
+            retValue.Add(_keyList.k_power_consumption_wh, calAverage.ToString());
+
+            return retValue;
+        }
+
         double getAveragePower(List<Dictionary<string, string>> currList,int testStep)
 
         {
+            //TOAN:01/12/2022. Total Running Time을 최종 판정 결과에 포함 시키기 위해 data-member사용 형태로 코드 변경
             //call by reference전달이므로 굳이 return-type을 사용하지 않겠다.
+            _usagedTime = 0;
+
             double calAverage=0;
             double usagedTime = 0;
             double usagedPower = 0;
@@ -1070,8 +1409,10 @@ namespace PerformanceUsability
                             {
                                 Match m = r.Match(strTarget);
                                 double cVal = double.Parse(m.Value);
-                                usagedTime = usagedTime + cVal;
-                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
+                                //TOAN : 01/12/2022. 데이터 멤버 변수로 변경
+                                //usagedTime = usagedTime + cVal;
+                                _usagedTime = _usagedTime + cVal;
+                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
                             }
                             else
                             {
@@ -1079,8 +1420,10 @@ namespace PerformanceUsability
                                 double nTmp = double.Parse(strTmp);
                                 //TOAN : 06/15/2020. 시간 수식 오류 수정
                                 //usagedPower = usagedPower + nTmp;
-                                usagedTime = usagedTime + nTmp;
-                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
+                                //TOAN : 01/12/2022. 데이터 멤버 변수로 변경
+                                //usagedTime = usagedTime + nTmp;
+                                _usagedTime = _usagedTime + nTmp;
+                                System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
                             }
                               
                         }
@@ -1094,10 +1437,13 @@ namespace PerformanceUsability
 
             }
 
+            //TOAN : 01/12/2022. 데이터 멤버를 이용한 형태로 코드 변경
             System.Diagnostics.Debug.WriteLine(string.Format("Usaged Power:{0}", usagedPower));
-            System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
-//STEP2 : 
-            calAverage = Math.Round(usagedPower/ usagedTime, 1, MidpointRounding.AwayFromZero);
+            System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", _usagedTime));
+            //System.Diagnostics.Debug.WriteLine(string.Format("Usaged Time:{0}", usagedTime));
+            //STEP2 : 
+            //calAverage = Math.Round(usagedPower/ usagedTime, 1, MidpointRounding.AwayFromZero);
+            calAverage = Math.Round(usagedPower / _usagedTime, 1, MidpointRounding.AwayFromZero);
             return calAverage;
         }
 
