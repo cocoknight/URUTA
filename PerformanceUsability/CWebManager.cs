@@ -174,8 +174,9 @@ namespace PerformanceUsability
                                     _startURL = @"http://www.naver.com";
                                 }
 
-                                //TOAN : 01/07/2021. 
-                                _driver.Manage().Window.Maximize();
+                                //TOAN : 01/07/2022. browser screen 최대화
+                                //TOAN : 01/17/2022. browser screen 표준 사이즈
+                                //_driver.Manage().Window.Maximize();
                                 _driver.Url = _startURL;
                                 
 

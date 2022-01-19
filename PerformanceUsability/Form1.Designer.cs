@@ -563,7 +563,7 @@
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.2.2";
+            this.Text = "체감 실사용시간 측정 2.1.2.3";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();

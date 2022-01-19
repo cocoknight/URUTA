@@ -27,9 +27,14 @@
     get_Range Error수정 : https://www.codeflair.net/2014/01/11/object-does-not-contain-a-definition-for-get_range-in-excel-c/
     Alignment 지정 : https://stackoverflow.com/questions/22535769/c-sharp-and-excellibrary-how-to-right-align-cells
 
-    2022-01-22 : 최종 판정 출력 양식 변경
+    2022-01-12 : 최종 판정 출력 양식 변경
     - Total Running Time 필드 추가
---***********************************************************************************************************/
+
+    2022-01-17 : 모델 비교 판정 양식 변경
+    - 각 모델별 실행 케이스를 작은쪽에서 맞추어서 계산것이 이전 로직
+    - 갯수를 맞추지 말고, 전체 수행된 시간을 가지고 진행할 것. 
+
+--********************************************************************************************************************************************/
 
 using System;
 using System.Collections.Generic;
@@ -749,40 +754,44 @@ namespace PerformanceUsability
             //    numofTC = compareNumber - 1;
             //}
 
-            if (listCountA > listCountB)
-            {
-                //검증모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
-                //따라서 두 모델의 기준을 맞추기 위해 비교 모델의 LowBattery전까지의 테스트 수행 갯수를 가지고 온다.
-                //TOAN : 07/13/2021. Logic-Change
-                //int compareNumber = this.get_compareCount(_tcListCompare);
-                int compareNumber = listCountB;
-                System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
-                //TOAN : 07/13/2021. code logic수정.
-                //numofTC = compareNumber - 1;
-                numofTC = compareNumber;
-            }
-            else if (listCountB > listCountA)
-            {
-                //비교모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
-                //이경우 src모델의 testcase을 기준으로 low-battery이전까지 수행항목 갯수를 체크 한다.
-                //TOAN : 07/13/2021
-                //int compareNumber = this.get_compareCount(_tcListSrc);
-                int compareNumber = listCountA;
-                System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
-                //TOAN : 07/13/2021. code logic수정
-                //numofTC = compareNumber - 1;
-                numofTC = compareNumber;
-            }
+            //TOAN : 01/17/2022. Logic Change
+            //2.1.2.3부터는 아래 로직 사용하지 않는다.
+            //각 모델의 실제 시작부터 지정된 배터리 까지의 로직으로 계산 한다.
             
-            else
-            {
-                //src와 dest의 수행갯수가 동일할 때.
-                //TOAN : 07/26/2021. 앞의 경우와 마찬가지로 같을 때도 get_compareCount를 수행할 필요가 없다.
-                //get_compaeCount로직은 더이상 사용하지 않는다.
-                //numofTC = this.get_compareCount(_tcListSrc);
-                numofTC = listCountA; //listCountB도 상관은 없다
-                System.Diagnostics.Debug.WriteLine(String.Format("The number of case is same"));
-            }
+            //if (listCountA > listCountB)
+            //{
+            //    //검증모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
+            //    //따라서 두 모델의 기준을 맞추기 위해 비교 모델의 LowBattery전까지의 테스트 수행 갯수를 가지고 온다.
+            //    //TOAN : 07/13/2021. Logic-Change
+            //    //int compareNumber = this.get_compareCount(_tcListCompare);
+            //    int compareNumber = listCountB;
+            //    System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
+            //    //TOAN : 07/13/2021. code logic수정.
+            //    //numofTC = compareNumber - 1;
+            //    numofTC = compareNumber;
+            //}
+            //else if (listCountB > listCountA)
+            //{
+            //    //비교모델의 testcase가 low-battery시점까지 더 많이 수행되었다.
+            //    //이경우 src모델의 testcase을 기준으로 low-battery이전까지 수행항목 갯수를 체크 한다.
+            //    //TOAN : 07/13/2021
+            //    //int compareNumber = this.get_compareCount(_tcListSrc);
+            //    int compareNumber = listCountA;
+            //    System.Diagnostics.Debug.WriteLine(String.Format("Compare Number:{0}", compareNumber));
+            //    //TOAN : 07/13/2021. code logic수정
+            //    //numofTC = compareNumber - 1;
+            //    numofTC = compareNumber;
+            //}
+            
+            //else
+            //{
+            //    //src와 dest의 수행갯수가 동일할 때.
+            //    //TOAN : 07/26/2021. 앞의 경우와 마찬가지로 같을 때도 get_compareCount를 수행할 필요가 없다.
+            //    //get_compaeCount로직은 더이상 사용하지 않는다.
+            //    //numofTC = this.get_compareCount(_tcListSrc);
+            //    numofTC = listCountA; //listCountB도 상관은 없다
+            //    System.Diagnostics.Debug.WriteLine(String.Format("The number of case is same"));
+            //}
 
 
             System.Diagnostics.Debug.WriteLine(String.Format("List Size TestMode:{0},CompareMode:{1}", listCountA,listCountB));
@@ -792,8 +801,13 @@ namespace PerformanceUsability
             //_com_averagePower = this.getAveragePower(_tcListCompare, numofTC);
             //_finalDecision = this.getfinalDecision(_averagePower,_com_averagePower);
 
-            Dictionary<string, string> accumulate_info_src = this.getAveratePower_and_RunningTime(_tcListSrc, numofTC);
-            Dictionary<string, string> accumulate_info_dest = this.getAveratePower_and_RunningTime(_tcListCompare, numofTC);
+            //TOAN : 01/17/2022. Logic-Change. 원래 갯수를 가지고 로직 비교
+            //Dictionary<string, string> accumulate_info_src = this.getAveratePower_and_RunningTime(_tcListSrc, numofTC);
+            //Dictionary<string, string> accumulate_info_dest = this.getAveratePower_and_RunningTime(_tcListCompare, numofTC);
+
+            Dictionary<string, string> accumulate_info_src = this.getAveratePower_and_RunningTime(_tcListSrc, listCountA);
+            Dictionary<string, string> accumulate_info_dest = this.getAveratePower_and_RunningTime(_tcListCompare, listCountB);
+
 
             _averagePower = Double.Parse(accumulate_info_src[_keyList.k_power_consumption_wh].ToString());
             _com_averagePower = Double.Parse(accumulate_info_dest[_keyList.k_power_consumption_wh].ToString());

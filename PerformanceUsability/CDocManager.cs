@@ -6,6 +6,8 @@
     http://creativecommons.org/licenses/by/2.5/ 
 
   2019-06-30 : Add new PPT Automation Manager class 
+  2022-01-17 : Power Point 실행 후 종료 루틴 추가 (W//A)
+  - process kill로 power point 앱 종료진행
 --***********************************************************************************************************/
 
 using System;
@@ -25,6 +27,7 @@ using System.Runtime.InteropServices;
 
 using System.Threading;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace PerformanceUsability
 {
@@ -92,6 +95,8 @@ namespace PerformanceUsability
                     }
                 }
 
+                //TOAN : 01/17/2022. Power-Point Application을 종료 시킨다.
+                this.terminate_ppt();
                 //_driver.Quit();
                  e.Cancel = true;
                 _exit_flag = true;
@@ -99,6 +104,45 @@ namespace PerformanceUsability
             }
 
             return retValue;
+        }
+
+        public void terminate_ppt()
+        {
+            //var proc = Process.GetProcessesByName("Video.UI");
+
+            //if (proc.Length > 0)
+            //{
+            //    proc[proc.Length - 1].Kill();
+            //}
+
+            //TOAN : 01/17/2022. 아래 코드에서 Quit가 동작하지 않는다.
+            //if(_pptApplication!=null)
+            //{
+            //    System.Diagnostics.Debug.WriteLine(string.Format("PPT Application Terminate"));
+            //   _pptApplication.Quit();
+
+            //}
+
+            //TOAN : 01/17/2022. Process Kill로 코드 변경.
+            try
+            {
+                var proc = Process.GetProcessesByName("POWERPNT");
+                int process_num = proc.Length;
+                if (proc.Length > 0)
+                {
+                    do
+                    {
+                        proc[process_num - 1].Kill();
+                        //proc = Process.GetProcessesByName("Excel");
+                        process_num = process_num - 1;
+                    } while (process_num > 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            }
+
         }
 
 
@@ -313,7 +357,8 @@ namespace PerformanceUsability
 
         public void initPPT()
         {
-            _pptApplication = new Application();
+            //_pptApplication = new Application();
+            _pptApplication = new PowerPoint.Application();
 
             _pptPresentation = _pptApplication.Presentations.Add(Office.MsoTriState.msoTrue);
 
@@ -321,6 +366,9 @@ namespace PerformanceUsability
 
             //_pptApplication.Visible = true;
 
+            //_pptApplication.Quit();
+
+            
         }
 
         public void initPPTAutomation()

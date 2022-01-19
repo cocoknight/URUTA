@@ -196,7 +196,7 @@ namespace PerformanceUsability
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.9";
-                this.Text = "Actual Use Time Test Automation 2.1.2.2";
+                this.Text = "Actual Use Time Test Automation 2.1.2.3";
                 //lblCase1.Text = "Search Baidu Movie Ranking";
                 lblCase1.Text = "Search 360 Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
@@ -372,7 +372,7 @@ namespace PerformanceUsability
             //int batterySize = Int32.Parse(currBattery);
             //_myUtility.setBatteryWH(batterySize);
 
-
+           
             
         }
 
@@ -991,6 +991,9 @@ namespace PerformanceUsability
                 //register battery checktimer for every 2sec
                 this.setMonitorTimer(2);
                 //this.setMonitorTimer(1200);
+
+                //TOAN : 01/17/2022. Test을 시작할 때 Form을 최소화
+                this.WindowState = FormWindowState.Minimized;    
             }
 
         }
