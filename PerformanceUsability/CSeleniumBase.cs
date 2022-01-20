@@ -31,6 +31,8 @@
 
     //packaeg 설치폴더
     //C:\Users\ymkim\AppData\Local\Apps\2.0\EG7WGWHP.Z47\DB6EZ705.3ZY\perf..tion_ff61be73852145bc_0001.0000_6c26f63f4e2bc74e
+
+    2022-01-19 : chromedriver.exe, msedgedriver.exe를 최소 화면(window minimize)으로 실행 하기
 --***********************************************************************************************************/
 
 using System;
@@ -48,11 +50,34 @@ using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Edge;
 using System.IO;
 using System.Windows.Forms;
+using System.Diagnostics;
+
+
+//DLL Import사용목적.
+using System.Runtime.InteropServices;
 
 namespace PerformanceUsability
 {
     class CSeleniumBase
     {
+
+        //TOAN : 01/19/2022. DLL Import for window size handling
+        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOWMINIMIZED = 2;
+        private const int SW_SHOWMAXIMIZED = 3;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+
+
+
         //Data Member
         //접근 권한을 명시적으로 지정하지 않으면 default로 private 권한이 지정된다.
         //private로 지정되면 상속클래스에도 직접 data-member를 접근할 수 없다.
@@ -151,6 +176,64 @@ namespace PerformanceUsability
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(sec);
         }
 
+        //TOAN : 01/19/2022. chromdedriver,msedgedriver가 최소화 된태로 실행되게 해보자.
+        public void minimize_edge_driver()
+        {
+            try
+            {
+                var proc = Process.GetProcessesByName("msedgedriver");
+                int process_num = proc.Length;
+
+                if (proc.Length > 0)
+                {
+                    do
+                    {
+
+                        System.Diagnostics.Debug.WriteLine(string.Format("Find edge Web-Driver"));
+                        //proc[process_num - 1].MainWindowHandle;
+                        //proc[process_num - 1].Kill();
+                        //proc = Process.GetProcessesByName("Excel");
+                        //process_num = process_num - 1;
+
+                        ShowWindowAsync(proc[process_num - 1].MainWindowHandle, SW_SHOWMINIMIZED);
+                        process_num = process_num - 1;
+                    } while (process_num > 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            }
+        }
+        public void minimize_chrome_driver()
+        {
+            try
+            {
+                var proc = Process.GetProcessesByName("chromedriver");
+                int process_num = proc.Length;
+
+                if (proc.Length > 0)
+                {
+                    do
+                    {
+
+                        System.Diagnostics.Debug.WriteLine(string.Format("Find chrome Web-Driver"));
+                        //proc[process_num - 1].MainWindowHandle;
+                        //proc[process_num - 1].Kill();
+                        //proc = Process.GetProcessesByName("Excel");
+                        //process_num = process_num - 1;
+
+                        ShowWindowAsync(proc[process_num - 1].MainWindowHandle, SW_SHOWMINIMIZED);
+                        process_num = process_num - 1;
+                    } while (process_num > 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+            }
+        }
+
         //TOAN  :07/15/2021. Chrome, Edge모두 지원하도록 코드 변경
         public void initSelenium(WebType mode)
         {
@@ -170,6 +253,7 @@ namespace PerformanceUsability
                             options.AddArguments("--ignore-ssl-errors");
 
                             _driver = new OpenQA.Selenium.Chrome.ChromeDriver(appPath, options, TimeSpan.FromMinutes(2));
+                            
                             break;
                         }
                     case WebType.WEB_EDGE:

@@ -5,6 +5,7 @@
     http://creativecommons.org/licenses/by/2.5/ 
 
   2019-06-30 : Add new File Download Manager Automation class 
+  2022-01-19 : chrome driver/edge driver 최소모드로 실행
 --***********************************************************************************************************/
 
 using System;
@@ -76,6 +77,9 @@ namespace PerformanceUsability
         public int _finishTime;
         public System.ComponentModel.BackgroundWorker worker;
         public bool _workComplete { get; set; }
+
+        //TOAN : 01/19/2022. 테스트 지역 정보추가
+        public string _currRegion = "";
 
         //TOAN : 03/18/2019. Explicit Wait code
         private void MyExplicitWait()
@@ -199,6 +203,25 @@ namespace PerformanceUsability
                         worker.ReportProgress(1);
 
                         this.setTaskTimer(_finishTime);
+
+
+                        //TOAN : 01/19/2022. Korea/China코드 구분 진행
+                        _currRegion = _uiManager.getCurrentRegion();
+
+                        //TOAN : 01/19/2022. chrome,edge driver minimize
+                        if (_currRegion.Equals("CN"))
+                        {
+
+                            //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                            this.minimize_edge_driver();
+                        }
+                        else
+                        {
+                            //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                            this.minimize_chrome_driver();
+
+                        }
+
 
                         while (this._task_exit_flag == false)
                         {

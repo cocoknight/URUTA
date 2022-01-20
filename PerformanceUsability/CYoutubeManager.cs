@@ -8,6 +8,8 @@
   2019-06-30 : Background Worker를 사용시 다음과 같이 역할 분담을 한다.
   2019-07-24 : Test Regison설정.
 
+  2022-01-19 : chrome, edige driver최소화
+
   dowork : working thread. 필요한 작업 수행
   worker_ProgressChanged : UI작업 수행. UI Task에 작업 요청 가능
   worker_RunWorkerCompleted : UI작업 수행. UI Task에 작업 요청 가능
@@ -86,6 +88,10 @@ namespace PerformanceUsability
 
         //TOAN : 07/24/2019. Test Region설정
         public string _testRegion;
+
+
+        //TOAN : 01/19/2021. 테스트 지역 정보추가
+        public string _currRegion = "";
 
 
         //TOAN : 06/25/2021. retry counter
@@ -184,6 +190,10 @@ namespace PerformanceUsability
                 {
                     case "ACTION_START":
                         {
+
+                            //TOAN : 01/19/2022. Korea/China코드 구분 진행
+                            _currRegion = _uiManager.getCurrentRegion();
+
                             //TOAN : 07/15/2021. code-change
                             //this.initSelenium(0);
                             this.initSelenium(_webType);
@@ -202,6 +212,20 @@ namespace PerformanceUsability
                             //TOAN End.
 
                             worker.ReportProgress(1); //View Update(This is very nice code)
+
+                            //TOAN : 01/19/2022. chrome,edge driver minimize
+                            if (_currRegion.Equals("CN"))
+                            {
+                               
+                                //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                                this.minimize_edge_driver();
+                            }
+                            else
+                            {
+                                //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                                this.minimize_chrome_driver();
+                               
+                            }
 
                             this.playVideoStreaming(_playURL);
 

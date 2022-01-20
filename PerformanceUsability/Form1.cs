@@ -196,7 +196,7 @@ namespace PerformanceUsability
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.9";
-                this.Text = "Actual Use Time Test Automation 2.1.2.3";
+                this.Text = "Actual Use Time Test Automation 2.1.2.4";
                 //lblCase1.Text = "Search Baidu Movie Ranking";
                 lblCase1.Text = "Search 360 Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
@@ -516,12 +516,12 @@ namespace PerformanceUsability
             
         }  
 
-    
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
         }
+
 
         private void chkCase6_CheckedChanged(object sender, EventArgs e)
         {
@@ -587,6 +587,9 @@ namespace PerformanceUsability
                 txtPPTWorkingTime.Text = "30"/*"10"*/;
                 txtPPTWorkingTime.Update();
             }
+
+           
+
         }
 
         private void checkDefault()
@@ -597,7 +600,14 @@ namespace PerformanceUsability
             //String fileToOpen = "C:\\movie\\Street-19627.avi";
             //String fileToOpen = txtTime3.Text;
 
-            if(string.IsNullOrEmpty(txtTime3.Text))
+            //TOAN : 01/19/2022. NC HW팀 요청 사항. Youtube초기 시간 설정
+            //txtYoutubeTime
+            if (string.IsNullOrEmpty(txtYoutubeTime.Text))
+            {
+                txtYoutubeTime.Text = "30"; 
+            }
+
+            if (string.IsNullOrEmpty(txtTime3.Text))
             {
                 //txtTime3.Text = "C:\\movie\\Street-19627.avi";
                 //TOAN : 06/17/2021. for shorting test time
@@ -874,7 +884,10 @@ namespace PerformanceUsability
 
                         //TOAN : 07/16/2021. adjust testtime
                         //int testtime = 3;
-                        int testtime = 30;
+                        //TOAN : 01/19/2022. 개발실 테스트용으로 play시간 조정. 사용자 입력 창에서 가지고 오도록 변경.
+                        int testtime = 0;
+                        testtime = Int32.Parse(txtYoutubeTime.Text);
+
 
                         //TOAN : 07/24/2019. Add Region Check
                         //TOAN : 07/15/2021. code-change
@@ -1994,6 +2007,11 @@ namespace PerformanceUsability
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
             }
+        }
+
+        private void txtYoutubeTime_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }  //End of Form Class 
 

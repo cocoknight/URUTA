@@ -168,12 +168,18 @@ namespace PerformanceUsability
                                     //Perhaps, This is internal baidu logic. So, I'll change url to www.so.com(360)
                                     //_startURL = @"http://www.baidu.com";
                                     _startURL = @"http://www.so.com";
+
+                                    //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                                    this.minimize_edge_driver();
                                 }
                                 else
                                 {
+                                    //TOAN : 01/19/2022. chromedriver.exe창을 최소화 
+                                    this.minimize_chrome_driver();
                                     _startURL = @"http://www.naver.com";
                                 }
 
+                             
                                 //TOAN : 01/07/2022. browser screen 최대화
                                 //TOAN : 01/17/2022. browser screen 표준 사이즈
                                 //_driver.Manage().Window.Maximize();
