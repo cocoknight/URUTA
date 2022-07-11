@@ -265,23 +265,35 @@ namespace PerformanceUsability
         public void addPage(int num)
         {
             //TOAN : 06/08/2019. Add-Page을 실행할 때, 아래 2줄은 꼭 쌍으로 참조가 되어야 한다.
-            _slides = _pptPresentation.Slides;
-            _slide = _slides.AddSlide(/*1*/num, _customLayout);
-
-            _objText = _slide.Shapes[1].TextFrame.TextRange;
-            _objText.Text = "제목입니당";
-            _objText = _slide.Shapes[2].TextFrame.TextRange;
-            //_objText.Text = "1번째줄\n2번째줄\n3번째줄";
-
-            int ioop = 0;
-            for (ioop = 0; ioop < 10; ioop++)
+            //TOAN : 07/11/2022. PowerPoint가 중복으로 Access할때 예외발생하는 이슈 처리
+            //e.g] 유효기간이 지났을 때 Log-in화면 처리등의 예외 추가.
+            try
             {
-                _objText.Text += ioop.ToString();
-                _objText.Text += "\n";
-                Thread.Sleep(2000);
-            }
 
-            _slide.NotesPage.Shapes[2].TextFrame.TextRange.Text = "여기는 슬라이드 설명쓰는곳입니당.";
+                _slides = _pptPresentation.Slides;
+                _slide = _slides.AddSlide(/*1*/num, _customLayout);
+
+                _objText = _slide.Shapes[1].TextFrame.TextRange;
+                _objText.Text = "제목입니당";
+                _objText = _slide.Shapes[2].TextFrame.TextRange;
+                //_objText.Text = "1번째줄\n2번째줄\n3번째줄";
+
+                int ioop = 0;
+                for (ioop = 0; ioop < 10; ioop++)
+                {
+                    _objText.Text += ioop.ToString();
+                    _objText.Text += "\n";
+                    Thread.Sleep(2000);
+                }
+
+                _slide.NotesPage.Shapes[2].TextFrame.TextRange.Text = "여기는 슬라이드 설명쓰는곳입니당.";
+            }catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Full Stacktrace: {0}", ex.ToString()));
+                this.terminate_ppt();
+                this.initPPT();
+            }
+            //TOAN END : 07/11/2022
         }
 
         public void addPageWithTime()

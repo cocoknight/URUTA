@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupSetting = new System.Windows.Forms.GroupBox();
+            this.txtYoutubeTime = new System.Windows.Forms.TextBox();
             this.btnLoad = new System.Windows.Forms.Button();
             this.txtPPTWorkingTime = new System.Windows.Forms.TextBox();
             this.txtDownloadTime = new System.Windows.Forms.TextBox();
@@ -72,7 +73,6 @@
             this.cmdRun = new System.Windows.Forms.Button();
             this.grpRunning = new System.Windows.Forms.GroupBox();
             this.RunningList = new System.Windows.Forms.ListView();
-            this.txtYoutubeTime = new System.Windows.Forms.TextBox();
             this.groupSetting.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -109,6 +109,14 @@
             this.groupSetting.TabStop = false;
             this.groupSetting.Text = " TestCase";
             this.groupSetting.Enter += new System.EventHandler(this.groupSetting_Enter);
+            // 
+            // txtYoutubeTime
+            // 
+            this.txtYoutubeTime.Location = new System.Drawing.Point(838, 62);
+            this.txtYoutubeTime.Name = "txtYoutubeTime";
+            this.txtYoutubeTime.Size = new System.Drawing.Size(100, 25);
+            this.txtYoutubeTime.TabIndex = 29;
+            this.txtYoutubeTime.TextChanged += new System.EventHandler(this.txtYoutubeTime_TextChanged);
             // 
             // btnLoad
             // 
@@ -556,14 +564,6 @@
             this.RunningList.UseCompatibleStateImageBehavior = false;
             this.RunningList.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             // 
-            // txtYoutubeTime
-            // 
-            this.txtYoutubeTime.Location = new System.Drawing.Point(838, 62);
-            this.txtYoutubeTime.Name = "txtYoutubeTime";
-            this.txtYoutubeTime.Size = new System.Drawing.Size(100, 25);
-            this.txtYoutubeTime.TabIndex = 29;
-            this.txtYoutubeTime.TextChanged += new System.EventHandler(this.txtYoutubeTime_TextChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -573,7 +573,7 @@
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
-            this.Text = "체감 실사용시간 측정 2.1.2.4";
+            this.Text = "체감 실사용시간 측정 2.1.2.5";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupSetting.ResumeLayout(false);
             this.groupSetting.PerformLayout();
