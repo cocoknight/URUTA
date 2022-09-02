@@ -517,6 +517,7 @@ namespace PerformanceUsability
         }  
 
 
+
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
@@ -1903,24 +1904,15 @@ namespace PerformanceUsability
 
         private void BtnDriver_Click(object sender, EventArgs e)
         {
-            //CommonOpenFileDialog dialog = new CommonOpenFileDialog(); 
-            //// 처음 보여줄 폴더 설정(안해도 됨) 
-            ////dialog.InitialDirectory = ""; 
-            //dialog.IsFolderPicker = true;
-            //if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-            //{
-            //    //label.Text = dialog.FileName; // 테스트용, 폴더 선택이 완료되면 선택된 폴더를 label에 출력 
-            //    _driverPath = dialog.FileName;
-            //    System.Diagnostics.Debug.WriteLine(string.Format("execution path: {0}", _driverPath));
-            //}
-
-
-            //기본 Folder Browser Dialog사용.
+            //기본 Folder Browser Dialog사용.(Folder만 지정할 경우 유용)
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.ShowDialog();
             _driverPath = dialog.SelectedPath;    //선택한 다이얼로그 경로 저장
 
         }
+
+
+
 
         public string getDriverPath()
         {

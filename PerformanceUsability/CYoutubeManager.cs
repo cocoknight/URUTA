@@ -497,7 +497,10 @@ namespace PerformanceUsability
                 //"//button[@class='ytp-ad-skip-button ytp-button']"
 
                 //TOAN : 01/07/2021. 아래 xpath에 해당하는 target은 youtube player의 중간에 나타나는 play버튼이다.
-                IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[5]/button"));
+                //TOAN : 09/02/2022. YouTube Play ID Change
+                ////*[@id="movie_player"]/div[4]/button
+                //IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[5]/button"));
+                IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
                 play_button.Click();
                 System.Diagnostics.Debug.WriteLine(string.Format("Movie player overlay playbutton clicked"));
 
