@@ -500,7 +500,10 @@ namespace PerformanceUsability
                 //TOAN : 09/02/2022. YouTube Play ID Change
                 ////*[@id="movie_player"]/div[4]/button
                 //IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[5]/button"));
-                IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+
+                //TOAN : 12/28/2022. 2.1.2.7 배포 준비할 것
+                //IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[4]/button"));
+                IWebElement play_button = _driver.FindElement(By.XPath("//*[@id=\"movie_player\"]/div[5]/button"));
                 play_button.Click();
                 System.Diagnostics.Debug.WriteLine(string.Format("Movie player overlay playbutton clicked"));
 

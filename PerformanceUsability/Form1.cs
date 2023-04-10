@@ -110,6 +110,8 @@ namespace PerformanceUsability
         KeyList _keyList;
         CUtility _myUtility;
 
+
+
         int _testcase_no;
         //TOAN : 12/17/2018. Declare Generic Data Structure for ListView
         public Dictionary<string, string> _columnInfoDic;
@@ -349,6 +351,9 @@ namespace PerformanceUsability
             txtDownloadTime.Text = sDownloadNumber;
             //txtPassNumber.Text = sPassNumber;
             txtPPTWorkingTime.Text = sPageNumber;
+
+            //TOAN : 11/07/2022
+            
 
             //this.setCheckBox_All_Value(1);
            // this.enableCheckBox_All_Value(0);
@@ -610,7 +615,6 @@ namespace PerformanceUsability
 
             if (string.IsNullOrEmpty(txtTime3.Text))
             {
-                //txtTime3.Text = "C:\\movie\\Street-19627.avi";
                 //TOAN : 06/17/2021. for shorting test time
                 txtTime3.Text = "C:\\autotest\\split.avi";
                 //txtTime3.Text = "C:\\autotest\\sea.avi";
