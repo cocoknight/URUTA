@@ -217,9 +217,11 @@ namespace PerformanceUsability
                                     Thread.Sleep(3000);
                                     IWebElement q = _driver.FindElement(By.Id("query"));
                                     q.SendKeys("최신영화순위");
-                                    _driver.FindElement(By.Id("search_btn")).Click();
-
+                                    //TOAN : 06/08/2023. button id변경
+                                    //_driver.FindElement(By.Id("search_btn")).Click();
+                                    _driver.FindElement(By.Id("search-btn")).Click();
                                 }
+
 
                             }
                             catch(Exception ex)

@@ -198,7 +198,7 @@ namespace PerformanceUsability
             {
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.5";
                 //this.Text = "User Feeling Real Use Time Automation 2.1.1.9";
-                this.Text = "Actual Use Time Test Automation 2.1.2.5";
+                this.Text = "Actual Use Time Test Automation 2.1.2.8";
                 //lblCase1.Text = "Search Baidu Movie Ranking";
                 lblCase1.Text = "Search 360 Movie Ranking";
                 lblCase2.Text = "Play QQ Video Streaming";
